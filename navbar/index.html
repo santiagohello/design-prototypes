@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MEW Portfolio – Navbar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #f5f5f5;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    /* ─── Navbar ─── */
+    .navbar {
+      background: #ffffff;
+      box-shadow: 0px 3px 12px -6px rgba(0, 0, 0, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      height: 64px;
+      width: 100vw;
+      position: fixed;
+      top: 0;
+      left: 0;
+    }
+
+    /* ─── Left ─── */
+    .navbar-left {
+      display: flex;
+      align-items: center;
+      gap: 48px;
+      flex-shrink: 0;
+    }
+
+    .navbar-logo {
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .navbar-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      pointer-events: none;
+    }
+
+    .logo-full {
+      width: 117px;
+      height: 40px;
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      display: none;
+    }
+
+    /* ─── Nav Links ─── */
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0px;
+      flex-shrink: 0;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 8px;
+      border-radius: 16px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .nav-link.active {
+      background: #e6e6e6;
+    }
+
+    .nav-link-inner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 4px;
+    }
+
+    .nav-link-label {
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      font-size: 14px;
+      line-height: 20px;
+      letter-spacing: -0.28px;
+      color: #000000;
+      white-space: nowrap;
+    }
+
+    /* ─── Icon containers (preserves Figma frame + inner vector padding) ─── */
+    .icon-frame-20 {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .icon-frame-24 {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .icon-vector {
+      position: absolute;
+    }
+
+    .icon-vector img {
+      position: absolute;
+      display: block;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* ─── Right ─── */
+    .navbar-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+
+    /* ─── Searchbar ─── */
+    .searchbar {
+      background: #e6e6e6;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      height: 40px;
+      padding: 0 10px;
+      border-radius: 24px;
+      width: 200px;
+      flex-shrink: 0;
+    }
+
+    .searchbar-icon {
+      flex-shrink: 0;
+    }
+
+    .searchbar-placeholder {
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 20px;
+      color: #767676;
+      white-space: nowrap;
+    }
+
+    /* ─── Account ─── */
+    .account {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    /* ─── Pills (Network + Wallet) ─── */
+    .pill {
+      border: 1px solid #e6e6e6;
+      box-shadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.12);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      height: 40px;
+      padding: 0 10px 0 8px;
+      border-radius: 20px;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .pill-avatar {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .pill-avatar img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+      display: block;
+    }
+
+    .pill-avatar.rounded img {
+      border-radius: 99px;
+    }
+
+    .pill-content {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .pill-label {
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      font-size: 14px;
+      line-height: 20px;
+      letter-spacing: -0.28px;
+      color: #000000;
+      white-space: nowrap;
+    }
+
+    .pill-chevron {
+      flex-shrink: 0;
+    }
+
+    /* ─── Actions ─── */
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .icon-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 24px;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .icon-button .icon-wrap {
+      flex-shrink: 0;
+    }
+
+    /* ─── Breakpoint 1280px ─── */
+    @media (max-width: 1279px) {
+      .navbar-left {
+        gap: 40px;
+      }
+
+      .searchbar {
+        width: 40px;
+        min-width: 40px;
+        max-width: 40px;
+        padding: 0;
+        gap: 0;
+        justify-content: center;
+        overflow: hidden;
+      }
+
+      .searchbar-placeholder {
+        display: none;
+      }
+    }
+
+    /* ─── Breakpoint 1140px ─── */
+    @media (max-width: 1139px) {
+      .navbar-left {
+        gap: 24px;
+      }
+
+      .logo-full {
+        display: none;
+      }
+
+      .logo-icon {
+        display: block;
+      }
+
+      .navbar-right {
+        gap: 8px;
+      }
+    }
+
+    /* ─── Breakpoint 768px ─── */
+    .hamburger-button {
+      display: none;
+    }
+
+    @media (max-width: 939px) {
+      .navbar-left {
+        gap: 0;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .navbar-right {
+        gap: 12px;
+      }
+
+      .actions {
+        display: none;
+      }
+
+      .hamburger-button {
+        display: flex;
+      }
+    }
+
+    /* ─── Breakpoint <768px ─── */
+    @media (max-width: 767px) {
+      .navbar {
+        padding: 0 16px;
+      }
+
+      .account {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+
+    <!-- Left -->
+    <div class="navbar-left">
+
+      <!-- Logo wordmark (1280+) -->
+      <div class="navbar-logo logo-full">
+        <img src="https://www.figma.com/api/mcp/asset/2100892c-220d-44eb-89d3-b8798017e111" alt="MEW Portfolio" />
+      </div>
+      <!-- Logo icon only (940 and below) -->
+      <div class="navbar-logo logo-icon">
+        <img src="https://www.figma.com/api/mcp/asset/0dd34894-8a2e-44c5-874b-b1ed02143653" alt="MEW Portfolio" />
+      </div>
+
+      <!-- Nav Links -->
+      <div class="nav-links">
+
+        <div class="nav-link active">
+          <div class="nav-link-inner">
+            <span class="nav-link-label">Home</span>
+          </div>
+        </div>
+
+        <div class="nav-link">
+          <div class="nav-link-inner">
+            <span class="nav-link-label">Stocks</span>
+          </div>
+        </div>
+
+        <div class="nav-link">
+          <div class="nav-link-inner">
+            <span class="nav-link-label">Crypto</span>
+          </div>
+        </div>
+
+        <div class="nav-link">
+          <div class="nav-link-inner">
+            <span class="nav-link-label">Perpetuals</span>
+          </div>
+        </div>
+
+        <div class="nav-link">
+          <div class="nav-link-inner">
+            <span class="nav-link-label">More</span>
+          </div>
+          <!-- heroicons:chevron-down-20-solid — frame 20x20, vector at bottom:31.25% left:25% right:24.91% top:39.91% -->
+          <div class="icon-frame-20">
+            <div class="icon-vector" style="bottom:31.25%;left:25%;right:24.91%;top:39.91%;">
+              <img src="https://www.figma.com/api/mcp/asset/771643ea-dfbd-4107-a378-557e5ff74f30" alt="" />
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Right -->
+    <div class="navbar-right">
+
+      <!-- Searchbar -->
+      <div class="searchbar">
+        <div class="searchbar-icon">
+          <!-- heroicons:magnifying-glass — frame 20x20, vector inset 12.5%, inner inset -5% -->
+          <div class="icon-frame-20">
+            <div class="icon-vector" style="inset:12.5%;">
+              <div style="position:absolute;inset:-5%;">
+                <img src="https://www.figma.com/api/mcp/asset/c2cd1e9f-2be7-464a-a010-34a0c0c29e04" alt="" style="display:block;width:100%;height:100%;" />
+              </div>
+            </div>
+          </div>
+        </div>
+        <span class="searchbar-placeholder">Search</span>
+      </div>
+
+      <!-- Account -->
+      <div class="account">
+
+        <!-- Network Pill: Ethereum -->
+        <div class="pill">
+          <div class="pill-avatar">
+            <img src="https://www.figma.com/api/mcp/asset/d57eeb84-a46d-4c41-8a2b-ad7274c1cf6b" alt="Ethereum" />
+          </div>
+          <div class="pill-content">
+            <span class="pill-label">Ethereum</span>
+            <div class="pill-chevron">
+              <!-- heroicons:chevron-right-20-solid — frame 20x20, vector at bottom:25.09% left:40% right:31.25% top:25% -->
+              <div class="icon-frame-20">
+                <div class="icon-vector" style="bottom:25.09%;left:40%;right:31.25%;top:25%;">
+                  <img src="https://www.figma.com/api/mcp/asset/1a5c28ca-8e7f-469f-9bca-b4387f89d909" alt="" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Wallet Pill -->
+        <div class="pill">
+          <div class="pill-avatar rounded">
+            <img src="https://www.figma.com/api/mcp/asset/eaaaca21-d94f-4b92-801d-2ca5d452cf2e" alt="Wallet avatar" />
+          </div>
+          <div class="pill-content">
+            <span class="pill-label">0xB6...884a</span>
+            <div class="pill-chevron">
+              <!-- heroicons:chevron-right-20-solid — frame 20x20, vector at bottom:25.09% left:40% right:31.25% top:25% -->
+              <div class="icon-frame-20">
+                <div class="icon-vector" style="bottom:25.09%;left:40%;right:31.25%;top:25%;">
+                  <img src="https://www.figma.com/api/mcp/asset/1a5c28ca-8e7f-469f-9bca-b4387f89d909" alt="" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Actions (bell + settings, hidden at 768) -->
+      <div class="actions">
+
+        <!-- Bell -->
+        <div class="icon-button">
+          <div class="icon-wrap">
+            <!-- heroicons:bell-solid — frame 24x24, vector at inset 9.38% 12.25% 9.4% 12.24% -->
+            <div class="icon-frame-24">
+              <div class="icon-vector" style="top:9.38%;right:12.25%;bottom:9.4%;left:12.24%;">
+                <img src="https://www.figma.com/api/mcp/asset/04e298db-8b2b-4f34-94ed-c5fe21eff119" alt="Notifications" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Settings -->
+        <div class="icon-button">
+          <div class="icon-wrap">
+            <!-- heroicons:cog-6-tooth-solid — frame 24x24, vector at inset 9.38% 11.84% 9.38% 11.85% -->
+            <div class="icon-frame-24">
+              <div class="icon-vector" style="top:9.38%;right:11.84%;bottom:9.38%;left:11.85%;">
+                <img src="https://www.figma.com/api/mcp/asset/ef79e392-9fda-4af2-ae17-e07ea4e44976" alt="Settings" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Hamburger (visible at 768 only) -->
+      <div class="icon-button hamburger-button">
+        <div class="icon-wrap">
+          <!-- heroicons:bars-3 — frame 24x24, vector inset 28.13% 15.63%, inner inset -7.14% -4.55% -->
+          <div class="icon-frame-24">
+            <div class="icon-vector" style="top:28.13%;right:15.63%;bottom:28.13%;left:15.63%;">
+              <div style="position:absolute;inset:-7.14% -4.55%;">
+                <img src="https://www.figma.com/api/mcp/asset/19230825-c938-4baf-a7e0-7c3e0d2cbb80" alt="Menu" style="display:block;width:100%;height:100%;" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </nav>
+
+</body>
+</html>
