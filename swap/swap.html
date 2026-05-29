@@ -1,0 +1,1637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MEW — Swap</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  font-family: 'DM Sans', sans-serif;
+  background: #fff;
+  height: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── NAVBAR ── */
+.navbar {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 76px;
+  background: #fff;
+  box-shadow: none;
+  border-bottom: 1px solid #e6e6e6;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  z-index: 100;
+}
+.navbar-left { display: flex; align-items: center; gap: 32px; }
+.mew-logo { width: 105px; height: 36px; object-fit: cover; }
+
+.nav-links { display: flex; align-items: center; gap: 8px; }
+.nav-link {
+  display: flex; align-items: center;
+  padding: 6px 8px;
+  border-radius: 16px;
+  font-size: 14px; font-weight: 600;
+  letter-spacing: -0.28px;
+  color: #000; cursor: pointer;
+  white-space: nowrap;
+}
+.nav-link.active { background: #e6e6e6; }
+
+.navbar-right { display: flex; align-items: center; gap: 16px; }
+
+.searchbar {
+  display: flex; align-items: center; gap: 10px;
+  width: 240px; height: 40px;
+  background: #f5f5f5;
+  border-radius: 24px;
+  padding: 0 10px;
+  cursor: text;
+}
+.searchbar-icon { width: 20px; height: 20px; flex-shrink: 0; }
+.searchbar-placeholder {
+  font-size: 14px; font-weight: 400;
+  color: #767676;
+  white-space: nowrap;
+}
+
+.network-pills { display: flex; align-items: center; gap: 8px; }
+.pill {
+  display: flex; align-items: center; gap: 8px;
+  height: 40px;
+  padding: 0 10px 0 8px;
+  border: 1px solid transparent;
+  border-radius: 20px;
+  box-shadow: 0px 1px 4px 0px rgba(0,0,0,0.12);
+  cursor: pointer;
+  font-size: 14px; font-weight: 600;
+  letter-spacing: -0.28px;
+  white-space: nowrap;
+}
+.pill:hover { border-color: #e6e6e6; box-shadow: 0px 1px 4px 0px rgba(0,0,0,0.12), inset 0 0 0 1.5px #e6e6e6; }
+.pill img.pill-icon { width: 24px; height: 24px; border-radius: 99px; }
+
+.icon-btns { display: flex; align-items: center; gap: 8px; }
+.icon-btn {
+  width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 24px; cursor: pointer;
+}
+.icon-btn svg { width: 24px; height: 24px; }
+
+/* ── LAYOUT ── */
+.page {
+  padding-top: 76px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  position: relative;
+}
+
+.main-area {
+  flex: 1;
+  background: #fff;
+}
+
+/* ── SWAP PANEL ── */
+.swap-panel {
+  width: 373px;
+  border-left: 1px solid #e6e6e6;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  flex-shrink: 0;
+}
+
+
+/* ── SWAP HEADER ── */
+.swap-header {
+  padding: 20px 20px 0;
+}
+.swap-title {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 22px;
+  letter-spacing: -0.4px;
+  color: #000;
+  white-space: nowrap;
+}
+
+.swap-form-section {
+  padding: 20px 20px 16px;
+  display: flex; flex-direction: column;
+  gap: 12px;
+  position: relative;
+}
+
+/* Selling card */
+.token-card {
+  background: #f5f5f5;
+  border-radius: 20px;
+  padding: 16px;
+  display: flex; flex-direction: column; gap: 20px;
+  border: 1px solid transparent;
+  position: relative;
+}
+
+/* Hover + focus state for selling card */
+#selling-card { padding-bottom: 20px; }
+#selling-card.input-hover { border-color: #e6e6e6; }
+#selling-card.focused {
+  background: #fff;
+  border-color: #e6e6e6;
+}
+#selling-card.focused .token-btn {
+  background: #f5f5f5;
+}
+#selling-card.focused .pct-pill {
+  background: #f5f5f5;
+  box-shadow: inset 0 0 0 2px transparent;
+}
+#selling-card.focused .pct-pill.active {
+  background: #fff;
+  box-shadow: inset 0 0 0 2px #000;
+}
+#selling-card.focused .amount-input {
+  caret-color: #005ae5;
+}
+#selling-card.focused .token-btn:hover { background: #e6e6e6; }
+#selling-card.focused .pct-pill:hover { background: #e6e6e6; }
+.card-label {
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.6px; text-transform: uppercase;
+  color: #000;
+}
+.amount-row {
+  display: flex; align-items: flex-start; gap: 16px;
+}
+.amount-left { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.amount-input-wrap {
+  height: 40px; display: flex; align-items: center;
+}
+.amount-input {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 32px; font-weight: 700;
+  letter-spacing: -0.96px;
+  color: #a5a5a5;
+  background: transparent; border: none; outline: none;
+  width: 100%; height: 40px;
+  caret-color: #000;
+  padding: 0;
+}
+.amount-input::placeholder { color: #a5a5a5; font-weight: 700; opacity: 1; }
+.amount-input:not([value=""]):not([value="0"]) { color: #000; }
+.amount-usd {
+  font-size: 12px; color: #575757; line-height: 20px; letter-spacing: 0;
+}
+
+/* Error message */
+.amount-error {
+  font-size: 12px; font-weight: 400;
+  color: #e40c58; line-height: 20px;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+.amount-error.hidden { display: none !important; }
+
+/* Typing indicator */
+.typing-indicator-wrap {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.typing-indicator-wrap.hidden { display: none !important; }
+.typing-indicator {
+  width: 100%;
+  height: 100%;
+}
+
+/* USDC pill button */
+.token-btn {
+  background: #fff;
+  border-radius: 24px;
+  height: 40px;
+  padding: 0 12px 0 8px;
+  display: flex; align-items: center; gap: 8px;
+  cursor: pointer;
+  border: 1px solid transparent; outline: none;
+  font-family: 'DM Sans', sans-serif;
+  transition: background 0.2s ease;
+}
+.token-btn:hover { background: #e6e6e6; }
+.token-btn img.token-icon { width: 24px; height: 24px; }
+.tok-logo-sm {
+  width: 24px; height: 24px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; font-weight: 700; color: #fff;
+  flex-shrink: 0; overflow: hidden; letter-spacing: 0;
+}
+.token-btn-label {
+  font-size: 14px; font-weight: 600;
+  letter-spacing: -0.28px; color: #000;
+}
+.token-btn .chevron-sm { width: 20px; height: 20px; }
+
+/* Quick-access token icons shown on token pill hover */
+.select-btn-wrap {
+  position: relative;
+  display: inline-flex;
+}
+.quick-tokens {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex; gap: 8px; align-items: center;
+  pointer-events: none;
+}
+.quick-tokens.visible {
+  pointer-events: auto;
+}
+/* Token pill quick-tokens: right-aligned, right-to-left stagger */
+#sell-token-wrap .quick-tokens,
+#buy-token-wrap .quick-tokens {
+  left: auto;
+  right: 0;
+  transform: none;
+}
+/* enter: right to left — 1st first, 5th last */
+#sell-token-wrap .quick-tokens.visible .quick-token-wrap:nth-child(1),
+#buy-token-wrap .quick-tokens.visible .quick-token-wrap:nth-child(1) { opacity: 1; transform: translateY(0); transition-delay: 0ms; }
+#sell-token-wrap .quick-tokens.visible .quick-token-wrap:nth-child(2),
+#buy-token-wrap .quick-tokens.visible .quick-token-wrap:nth-child(2) { opacity: 1; transform: translateY(0); transition-delay: 60ms; }
+#sell-token-wrap .quick-tokens.visible .quick-token-wrap:nth-child(3),
+#buy-token-wrap .quick-tokens.visible .quick-token-wrap:nth-child(3) { opacity: 1; transform: translateY(0); transition-delay: 120ms; }
+#sell-token-wrap .quick-tokens.visible .quick-token-wrap:nth-child(4),
+#buy-token-wrap .quick-tokens.visible .quick-token-wrap:nth-child(4) { opacity: 1; transform: translateY(0); transition-delay: 180ms; }
+#sell-token-wrap .quick-tokens.visible .quick-token-wrap:nth-child(5),
+#buy-token-wrap .quick-tokens.visible .quick-token-wrap:nth-child(5) { opacity: 1; transform: translateY(0); transition-delay: 240ms; }
+/* exit: left to right — 5th first, 1st last */
+#sell-token-wrap .quick-tokens .quick-token-wrap:nth-child(5),
+#buy-token-wrap .quick-tokens .quick-token-wrap:nth-child(5) { transition-delay: 0ms; }
+#sell-token-wrap .quick-tokens .quick-token-wrap:nth-child(4),
+#buy-token-wrap .quick-tokens .quick-token-wrap:nth-child(4) { transition-delay: 60ms; }
+#sell-token-wrap .quick-tokens .quick-token-wrap:nth-child(3),
+#buy-token-wrap .quick-tokens .quick-token-wrap:nth-child(3) { transition-delay: 120ms; }
+#sell-token-wrap .quick-tokens .quick-token-wrap:nth-child(2),
+#buy-token-wrap .quick-tokens .quick-token-wrap:nth-child(2) { transition-delay: 180ms; }
+#sell-token-wrap .quick-tokens .quick-token-wrap:nth-child(1),
+#buy-token-wrap .quick-tokens .quick-token-wrap:nth-child(1) { transition-delay: 240ms; }
+.quick-token-btn {
+  background: #fff;
+  border: none;
+  box-shadow: 0 0 0 1.5px #e6e6e6;
+  border-radius: 99px;
+  padding: 3px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  outline: none;
+  flex-shrink: 0;
+  transition: background 0.2s ease;
+}
+.quick-token-btn:hover {
+  box-shadow: 0 0 0 1.5px #a5a5a5;
+}
+.quick-token-circle {
+  width: 16px; height: 16px; border-radius: 50%;
+  display: block; flex-shrink: 0;
+  object-fit: cover;
+}
+
+/* Quick token tooltip */
+.quick-token-wrap {
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+.quick-token-tooltip {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff;
+  border-radius: 8px;
+  padding: 4px 8px;
+  white-space: nowrap;
+  font-size: 12px; font-weight: 600;
+  letter-spacing: -0.24px; line-height: 18px;
+  color: #000;
+  box-shadow: 0 0 0.5px rgba(0,0,0,0.25), 0 1.5px 2px rgba(0,0,0,0.12);
+  pointer-events: none;
+  opacity: 0;
+  transform: translateX(-50%) translateY(4px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+.quick-token-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 7px solid transparent;
+  border-top-color: #fff;
+  filter: drop-shadow(0 1px 0.5px rgba(0,0,0,0.1));
+}
+.quick-token-wrap:hover .quick-token-tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Buy select token button */
+.buy-select-btn {
+  background: #005ae5;
+  border-radius: 24px;
+  height: 40px;
+  padding: 0 12px 0 16px;
+  display: flex; align-items: center;
+  cursor: pointer;
+  border: none; outline: none;
+  font-family: 'DM Sans', sans-serif;
+  flex-shrink: 0;
+}
+.buy-select-btn span {
+  display: flex; align-items: center; gap: 4px;
+}
+.buy-select-label {
+  font-size: 14px; font-weight: 600;
+  letter-spacing: -0.28px; color: #fff;
+  white-space: nowrap;
+}
+.buy-select-btn svg { color: #fff; }
+.buy-select-btn.token-selected {
+  background: #fff;
+  padding: 0 12px 0 8px;
+}
+.buy-select-btn.token-selected .buy-select-label { color: #000; }
+.buy-select-btn.token-selected svg { color: #000; }
+.buy-select-btn:not(.token-selected):hover { background: #084DC5; }
+.buy-select-btn.token-selected:hover { background: #e6e6e6; }
+
+/* Selected token button (for buying when token chosen) */
+.selected-token-btn {
+  background: #fff;
+  border-radius: 24px;
+  height: 40px;
+  padding: 0 12px 0 8px;
+  display: flex; align-items: center; gap: 8px;
+  cursor: pointer;
+  border: 1px solid transparent; outline: none;
+  font-family: 'DM Sans', sans-serif;
+  transition: background 0.2s ease;
+}
+.selected-token-btn:hover { background: #e6e6e6; }
+.selected-token-btn .token-btn-label { font-size: 14px; font-weight: 600; letter-spacing: -0.28px; color: #000; }
+.selected-token-btn .chevron-sm { width: 20px; height: 20px; }
+
+.divider {
+  height: 1px; background: #e6e6e6; width: 100%;
+  border: none; margin: 0;
+}
+
+/* Sell amount section */
+.sell-amount-section {
+  display: flex; flex-direction: column; gap: 8px;
+}
+.sell-meta-row {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%;
+}
+.sell-meta-left {
+  display: flex; align-items: center; gap: 4px;
+}
+.sell-balance-right {
+  font-size: 12px; color: #575757; line-height: 18px;
+  white-space: nowrap; letter-spacing: 0;
+}
+.sell-balance-right strong { color: inherit; font-weight: inherit; letter-spacing: inherit; }
+
+/* Balance row (pct pills) */
+.balance-row {
+  display: flex; align-items: center; gap: 4px;
+}
+.balance-row .pct-pill { flex: 1; }
+.pct-pill {
+  background: #fff;
+  border-radius: 8px;
+  padding: 8px;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.6px; text-transform: uppercase;
+  color: #000; cursor: pointer;
+  border: none; outline: none; box-shadow: inset 0 0 0 2px transparent;
+  font-family: 'DM Sans', sans-serif;
+  line-height: 15px;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+.pct-pill:hover { background: #e6e6e6; }
+.pct-pill.active { background: #fff; color: #000; box-shadow: inset 0 0 0 2px #000; }
+
+/* Exchange rate row */
+.rate-section { display: flex; flex-direction: column; gap: 16px; }
+.rate-row {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 12px; font-weight: 400; line-height: 18px;
+  color: #575757;
+}
+.rate-row span:first-child { flex: 1; }
+.rate-row span:last-child { flex: 1; text-align: right; }
+
+/* Swap arrows button — zero-height spacer centered on the card boundary.
+   margin: -6px cancels half the 12px gap on each side so the total
+   visual gap between selling and buying cards stays at 12px. */
+.swap-arrow-spacer {
+  height: 0;
+  margin: -6px 0;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  z-index: 10;
+}
+.swap-arrows-btn {
+  position: relative;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  background: #f5f5f5;
+  box-shadow: inset 0 0 0 4px #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 10px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  outline: none;
+  flex-shrink: 0;
+}
+.swap-arrows-btn:hover { background: #e6e6e6; }
+.swap-arrows-icon {
+  position: relative; width: 20px; height: 20px; flex-shrink: 0;
+  transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.swap-arrows-icon.rotated { transform: rotate(180deg); }
+.swap-arrows-btn.hidden { visibility: hidden; pointer-events: none; }
+
+/* Bottom section */
+.swap-bottom {
+  flex: 1;
+  padding: 0 20px 20px;
+  display: flex; flex-direction: column;
+  justify-content: space-between;
+}
+@keyframes btn-drop-in {
+  from { opacity: 0; transform: translateY(-12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.main-btn {
+  width: 100%; height: 48px;
+  border-radius: 24px;
+  border: none; outline: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px; font-weight: 600;
+  letter-spacing: -0.32px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.main-btn.entering {
+  animation: btn-drop-in 0.3s cubic-bezier(0.34, 1.2, 0.64, 1) forwards;
+}
+.main-btn.disabled {
+  background: #f5f5f5; color: #767676;
+  cursor: not-allowed;
+}
+.main-btn.active {
+  background: #005ae5; color: #fff;
+  cursor: pointer;
+}
+.main-btn.active:hover { background: #084DC5; }
+.main-btn.invisible {
+  visibility: hidden; pointer-events: none;
+}
+.help-btn {
+  background: none; border: none; outline: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px; font-weight: 600;
+  letter-spacing: 0;
+  color: #005ae5; cursor: pointer;
+  text-align: center;
+  padding: 5px 8px;
+  border-radius: 24px;
+  align-self: center;
+}
+
+/* ── RIGHT SIDEBAR ── */
+.right-sidebar {
+  width: 88px;
+  min-height: 824px;
+  border-left: 1px solid #e6e6e6;
+  display: flex; flex-direction: column;
+  padding: 8px;
+  flex-shrink: 0;
+}
+.sidebar-item {
+  width: 72px; height: 72px;
+  border-radius: 16px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+}
+.sidebar-item.active { background: #f5f5f5; }
+.sidebar-item img { width: 24px; height: 24px; }
+.sidebar-label {
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.6px; text-transform: uppercase;
+  color: #575757; text-align: center; width: 100%;
+  line-height: 15px;
+}
+.sidebar-collapse { justify-content: center; }
+.icon-container-24 {
+  position: relative;
+  width: 24px; height: 24px;
+  flex-shrink: 0;
+}
+
+/* ── ASSET MODAL ── */
+.modal-skrim {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 200;
+  display: flex; align-items: center; justify-content: center;
+}
+.asset-modal {
+  background: #fff;
+  border-radius: 24px;
+  width: 480px;
+  height: 80vh;
+  display: flex; flex-direction: column;
+  padding: 24px 24px 0;
+  gap: 0;
+  position: relative;
+}
+.modal-header { display: flex; flex-direction: column; gap: 4px; margin-bottom: 24px; }
+.modal-title { font-size: 20px; font-weight: 700; letter-spacing: -0.04em; line-height: 22px; }
+.modal-subtitle { font-size: 16px; color: #575757; }
+.modal-close {
+  position: absolute; top: 16px; right: 16px;
+  width: 32px; height: 32px;
+  background: none; border-radius: 50%;
+  border: none; outline: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.modal-search-wrap {
+  flex-shrink: 0;
+  margin-bottom: 24px;
+}
+.modal-search-inner {
+  background: #e6e6e6;
+  border-radius: 24px;
+  height: 40px;
+  padding: 0 10px;
+  display: flex; align-items: center; gap: 10px;
+}
+.modal-search-inner input {
+  flex: 1; border: none; outline: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; line-height: 20px; background: transparent; color: #000;
+}
+.modal-search-inner input::placeholder { color: #767676; }
+.modal-token-list {
+  flex: 1;
+  display: flex; flex-direction: column;
+  gap: 24px;
+  margin: -8px 0 0;
+  padding: 0;
+  min-height: 0;
+  overflow: visible;
+}
+.modal-token-list-scroll {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+  padding: 12px 20px;
+  margin: 0 -20px;
+}
+.modal-token-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 0;
+  border-radius: 16px;
+  cursor: pointer;
+  flex-shrink: 0;
+  position: relative;
+}
+.modal-token-row::before {
+  content: '';
+  position: absolute;
+  inset: -12px;
+  border-radius: 16px;
+  background: transparent;
+  transition: background 0.15s ease;
+}
+.modal-token-row:hover::before { background: #f5f5f5; }
+.modal-token-row > * { position: relative; z-index: 1; }
+.modal-tok-logo {
+  width: 40px; height: 40px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; color: #fff;
+  flex-shrink: 0; overflow: hidden; letter-spacing: 0;
+}
+.modal-tok-info { flex: 1; min-width: 0; }
+.modal-tok-symbol { font-size: 16px; font-weight: 600; letter-spacing: -0.32px; }
+.modal-tok-name { font-size: 14px; color: #575757; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.modal-tok-price { text-align: right; flex-shrink: 0; }
+.modal-tok-balance-wrap { display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0; }
+.modal-tok-balance { font-size: 14px; font-weight: 400; line-height: 20px; color: #000; flex-shrink: 0; letter-spacing: 0; }
+.modal-tok-balance-usd { font-size: 12px; font-weight: 400; line-height: 18px; color: #575757; letter-spacing: 0; }
+.modal-tok-list-header { display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; }
+.modal-tok-list-header hr { border: none; border-top: 1px solid #e6e6e6; margin: 0; }
+.modal-tok-list-header-row {
+  display: flex; justify-content: space-between;
+  font-size: 12px; font-weight: 400; line-height: 18px;
+  color: #575757; letter-spacing: 0;
+}
+.modal-tok-balance--zero { font-size: 14px; font-weight: 400; line-height: 20px; letter-spacing: 0; color: #000; }
+.modal-tok-usd { font-size: 14px; font-weight: 600; letter-spacing: -0.28px; }
+.modal-tok-change { font-size: 12px; letter-spacing: 0; }
+.modal-tok-change.up { color: #05c0a5; }
+.modal-tok-change.down { color: #e40c58; }
+.modal-tok-change.flat { color: #a5a5a5; }
+
+/* ── CONFIRMATION MODAL ── */
+.confirm-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 300;
+  display: flex; align-items: center; justify-content: center;
+}
+.confirm-modal {
+  background: #fff;
+  border-radius: 24px;
+  width: 400px;
+  padding: 32px;
+  display: flex; flex-direction: column; gap: 24px;
+}
+.confirm-title { font-size: 20px; font-weight: 700; letter-spacing: -0.4px; }
+.confirm-row {
+  background: #f5f5f5; border-radius: 16px; padding: 20px;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.confirm-label { font-size: 11px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: #575757; }
+.confirm-amount { font-size: 28px; font-weight: 700; letter-spacing: -0.84px; }
+.confirm-usd { font-size: 12px; color: #575757; letter-spacing: 0; }
+.confirm-swap-icon {
+  display: flex; justify-content: center;
+  margin: -8px 0;
+}
+.confirm-swap-icon img { width: 20px; height: 20px; }
+.confirm-details {
+  display: flex; flex-direction: column; gap: 8px;
+}
+.confirm-detail-row {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 12px; color: #575757; letter-spacing: 0;
+}
+.confirm-detail-row strong { color: #000; font-weight: 600; }
+.confirm-btns { display: flex; gap: 12px; }
+.cancel-btn {
+  flex: 1; height: 48px; border-radius: 24px;
+  border: 1px solid #e6e6e6; background: #fff;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px; font-weight: 600; cursor: pointer; color: #000;
+}
+.confirm-btn {
+  flex: 1; height: 48px; border-radius: 24px;
+  border: none; background: #005ae5; color: #fff;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px; font-weight: 600; cursor: pointer;
+}
+.confirm-btn:hover { background: #084DC5; }
+
+/* Success state */
+.success-modal {
+  background: #fff;
+  border-radius: 24px;
+  width: 400px;
+  padding: 40px 32px;
+  display: flex; flex-direction: column; align-items: center; gap: 20px;
+  text-align: center;
+}
+.success-icon {
+  width: 64px; height: 64px;
+  background: #eef3ff; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px;
+}
+.success-title { font-size: 22px; font-weight: 700; letter-spacing: -0.44px; }
+.success-desc { font-size: 14px; color: #575757; line-height: 20px; }
+.success-btn {
+  width: 100%; height: 48px; border-radius: 24px;
+  border: none; background: #005ae5; color: #fff;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px; font-weight: 600; cursor: pointer;
+}
+
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="navbar-left">
+    <img class="mew-logo" src="https://www.figma.com/api/mcp/asset/599e1023-71cd-4261-9172-ac29ee34d77e" alt="MEW">
+    <div class="nav-links">
+      <div class="nav-link active">Home</div>
+      <div class="nav-link">Stocks</div>
+      <div class="nav-link">Crypto</div>
+      <div class="nav-link">Perpetuals</div>
+      <div class="nav-link">More
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20" style="display:block;flex-shrink:0;margin-left:2px"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+      </div>
+    </div>
+  </div>
+  <div class="navbar-right">
+    <div class="searchbar">
+      <svg class="searchbar-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd"/></svg>
+      <span class="searchbar-placeholder">Search...</span>
+    </div>
+    <div class="network-pills">
+      <div class="pill">
+        <img class="pill-icon" src="https://www.figma.com/api/mcp/asset/9dec08ea-4f7e-424c-963a-859e5e10956b" alt="ETH">
+        <span>Ethereum</span>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20" style="display:block;flex-shrink:0"><path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd"/></svg>
+      </div>
+      <div class="pill">
+        <img class="pill-icon" src="https://www.figma.com/api/mcp/asset/12c385e5-7081-4f82-b5a3-6a9e8e92a4c1" alt="wallet">
+        <span>0xB694...884a</span>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20" style="display:block;flex-shrink:0"><path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd"/></svg>
+      </div>
+    </div>
+    <div class="icon-btns">
+      <div class="icon-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path fill-rule="evenodd" d="M11.078 2.25c-.917 0-1.699.663-1.85 1.567L9.05 4.889c-.02.12-.115.26-.297.348a7.493 7.493 0 00-.986.57c-.166.115-.334.126-.45.083L6.3 5.508a1.875 1.875 0 00-2.282.819l-.922 1.597a1.875 1.875 0 00.432 2.385l.84.692c.095.078.17.229.154.43a7.598 7.598 0 000 1.139c.015.2-.059.352-.153.43l-.841.692a1.875 1.875 0 00-.432 2.385l.922 1.597a1.875 1.875 0 002.282.818l1.019-.382c.115-.043.283-.031.45.082.312.214.641.405.985.57.182.088.277.228.297.35l.178 1.071c.151.904.933 1.567 1.85 1.567h1.844c.916 0 1.699-.663 1.85-1.567l.178-1.072c.02-.12.114-.26.297-.349.344-.165.673-.356.985-.57.167-.114.335-.125.45-.082l1.02.382a1.875 1.875 0 002.28-.819l.923-1.597a1.875 1.875 0 00-.432-2.385l-.84-.692c-.095-.078-.17-.229-.154-.43a7.614 7.614 0 000-1.139c-.016-.2.059-.352.153-.43l.84-.692c.708-.582.891-1.59.433-2.385l-.922-1.597a1.875 1.875 0 00-2.282-.818l-1.02.382c-.114.043-.282.031-.449-.083a7.49 7.49 0 00-.985-.57c-.183-.087-.277-.227-.297-.348l-.179-1.072a1.875 1.875 0 00-1.85-1.567h-1.843zM12 15.75a3.75 3.75 0 100-7.5 3.75 3.75 0 000 7.5z" clip-rule="evenodd"/></svg>
+      </div>
+      <div class="icon-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path fill-rule="evenodd" d="M5.25 9a6.75 6.75 0 0113.5 0v.75c0 2.123.8 4.057 2.118 5.52a.75.75 0 01-.297 1.206c-1.544.57-3.16.99-4.831 1.243a3.75 3.75 0 11-7.48 0 24.585 24.585 0 01-4.831-1.244.75.75 0 01-.298-1.205A8.217 8.217 0 005.25 9.75V9zm4.502 8.9a2.25 2.25 0 104.496 0 25.057 25.057 0 01-4.496 0z" clip-rule="evenodd"/></svg>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- PAGE -->
+<div class="page">
+  <div class="main-area"></div>
+
+  <!-- SWAP PANEL -->
+  <div class="swap-panel">
+
+    <!-- SWAP HEADER -->
+    <div class="swap-header">
+      <p class="swap-title">Swap</p>
+    </div>
+
+    <div class="swap-form-section">
+
+      <!-- SELLING card -->
+      <div class="token-card" id="selling-card">
+        <div class="card-label">Sell</div>
+        <div class="sell-amount-section">
+          <div class="amount-row">
+            <div class="amount-left">
+              <div class="amount-input-wrap">
+                <input
+                  class="amount-input"
+                  id="sell-input"
+                  type="text"
+                  inputmode="decimal"
+                  placeholder="0"
+                  value=""
+                  autocomplete="off"
+                >
+              </div>
+            </div>
+            <div class="select-btn-wrap" id="sell-token-wrap">
+              <div class="quick-tokens" id="sell-quick-tokens"></div>
+              <button class="token-btn" id="sell-token-btn" onclick="openPicker('sell')">
+                <div class="tok-logo-sm" id="sell-token-icon" style="background:#2775CA">UC</div>
+                <div style="display:flex;align-items:center;gap:0;">
+                  <span class="token-btn-label" id="sell-token-label">USDC</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" width="20" height="20" style="display:block;flex-shrink:0"><path fill-rule="evenodd" d="M6.22 4.22a.75.75 0 011.06 0l3.25 3.25a.75.75 0 010 1.06l-3.25 3.25a.75.75 0 01-1.06-1.06L9.19 8 6.22 5.03a.75.75 0 010-1.06z" clip-rule="evenodd"/></svg>
+                </div>
+              </button>
+            </div>
+          </div>
+          <div class="sell-meta-row">
+            <div class="sell-meta-left">
+              <div class="amount-usd" id="sell-usd">$0.00</div>
+              <div class="typing-indicator-wrap hidden" id="typing-indicator-wrap">
+              <svg class="typing-indicator" viewBox="0 0 180 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Loading">
+                <style>
+                  .ti-dot { animation: ti-pulse 0.7s ease-in-out infinite; }
+                  .ti-d1 { transform-origin: 44px 50px; animation-delay: 0s; }
+                  .ti-d2 { transform-origin: 90px 50px; animation-delay: -0.23s; }
+                  .ti-d3 { transform-origin: 136px 50px; animation-delay: -0.47s; }
+                  @keyframes ti-pulse {
+                    0%   { transform: scale(1); }
+                    35%  { transform: scale(1.55); }
+                    100% { transform: scale(1); }
+                  }
+                  @media (prefers-reduced-motion: reduce) { .ti-dot { animation: none; } }
+                </style>
+                <circle class="ti-dot ti-d1" cx="44"  cy="50" r="13" fill="#1a1a1a"/>
+                <circle class="ti-dot ti-d2" cx="90"  cy="50" r="13" fill="#1a1a1a"/>
+                <circle class="ti-dot ti-d3" cx="136" cy="50" r="13" fill="#1a1a1a"/>
+              </svg>
+              </div>
+              <div class="amount-error hidden" id="sell-error"></div>
+            </div>
+            <div class="sell-balance-right">Balance: <strong id="sell-balance-label">125.98 USDC</strong></div>
+          </div>
+        </div>
+        <div class="balance-row" id="balance-row">
+          <button class="pct-pill" id="pct-25" onmousedown="event.preventDefault()" onclick="setPct(0.25)">25%</button>
+          <button class="pct-pill" id="pct-50" onmousedown="event.preventDefault()" onclick="setPct(0.50)">50%</button>
+          <button class="pct-pill" id="pct-75" onmousedown="event.preventDefault()" onclick="setPct(0.75)">75%</button>
+          <button class="pct-pill" id="pct-max" onmousedown="event.preventDefault()" onclick="setPct(1)">MAX</button>
+        </div>
+      </div>
+
+      <!-- Swap arrows — sits exactly on the boundary between the two cards -->
+      <div class="swap-arrow-spacer">
+        <button class="swap-arrows-btn hidden" id="swap-arrows" onclick="swapTokens()">
+          <div class="swap-arrows-icon">
+            <div style="position:absolute;inset:10%;">
+              <img style="position:absolute;inset:0;width:100%;height:100%;display:block;" src="https://www.figma.com/api/mcp/asset/54a617bc-a443-4000-b275-742214ae0e29" alt="">
+            </div>
+          </div>
+        </button>
+      </div>
+
+      <!-- BUYING card -->
+      <div class="token-card buying" id="buying-card">
+        <div class="card-label">Buying</div>
+        <div class="sell-amount-section" id="buy-amount-row">
+          <div class="amount-row">
+            <div class="amount-left">
+              <div class="amount-input-wrap">
+                <input
+                  class="amount-input"
+                  id="buy-input"
+                  type="text"
+                  placeholder="0"
+                  value=""
+                  readonly
+                  style="cursor:default;"
+                >
+              </div>
+            </div>
+            <div class="select-btn-wrap" id="buy-token-wrap">
+              <div class="quick-tokens" id="buy-quick-tokens"></div>
+              <button class="buy-select-btn" id="buy-token-btn" onclick="openPicker('buy')">
+                <span id="buy-token-btn-inner">
+                  <span class="buy-select-label">Select token</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" width="20" height="20" style="display:block;flex-shrink:0"><path fill-rule="evenodd" d="M6.22 4.22a.75.75 0 011.06 0l3.25 3.25a.75.75 0 010 1.06l-3.25 3.25a.75.75 0 01-1.06-1.06L9.19 8 6.22 5.03a.75.75 0 010-1.06z" clip-rule="evenodd"/></svg>
+                </span>
+              </button>
+            </div>
+          </div>
+          <div class="sell-meta-row">
+            <div class="amount-usd" id="buy-usd">$0.00</div>
+            <div class="sell-balance-right" id="buy-balance-label">--</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom -->
+    <div class="swap-bottom">
+      <button class="main-btn disabled" id="main-btn">Enter amount</button>
+      <button class="help-btn">Need help swapping?</button>
+    </div>
+  </div>
+
+  <!-- RIGHT SIDEBAR -->
+  <div class="right-sidebar">
+    <div class="sidebar-item sidebar-collapse">
+      <div class="icon-container-24">
+        <div style="position:absolute;inset:25.9% 18.75% 24.34% 20.43%;">
+          <img style="position:absolute;inset:0;width:100%;height:100%;display:block;" src="https://www.figma.com/api/mcp/asset/ef8333de-3463-436e-a327-989c49a6c0dc" alt="">
+        </div>
+      </div>
+    </div>
+    <div class="sidebar-item">
+      <div class="icon-container-24">
+        <div style="position:absolute;inset:12.5%;">
+          <img style="position:absolute;inset:0;width:100%;height:100%;display:block;" src="https://www.figma.com/api/mcp/asset/2829cb14-5689-433d-9e34-b21d6201790e" alt="">
+        </div>
+      </div>
+      <span class="sidebar-label">Trade</span>
+    </div>
+    <div class="sidebar-item active">
+      <div class="icon-container-24">
+        <div style="position:absolute;inset:0;">
+          <img style="position:absolute;inset:0;width:100%;height:100%;display:block;filter:invert(18%) sepia(99%) saturate(3000%) hue-rotate(210deg) brightness(95%) contrast(101%);" src="https://www.figma.com/api/mcp/asset/cae3431b-1fe0-4619-8326-8f7d3b1869a5" alt="">
+        </div>
+      </div>
+      <span class="sidebar-label">Swap</span>
+    </div>
+    <div class="sidebar-item">
+      <div class="icon-container-24">
+        <div style="position:absolute;inset:0;">
+          <img style="position:absolute;inset:0;width:100%;height:100%;display:block;filter:invert(18%) sepia(99%) saturate(3000%) hue-rotate(210deg) brightness(95%) contrast(101%);" src="https://www.figma.com/api/mcp/asset/7d342acd-4988-4786-98fc-ae1e9897b6a5" alt="">
+        </div>
+      </div>
+      <span class="sidebar-label">Bridge</span>
+    </div>
+    <div class="sidebar-item">
+      <div class="icon-container-24">
+        <div style="position:absolute;inset:12.5%;">
+          <img style="position:absolute;inset:0;width:100%;height:100%;display:block;" src="https://www.figma.com/api/mcp/asset/253f2f1a-52bc-456a-8ac0-0c56d416e41b" alt="">
+        </div>
+      </div>
+      <span class="sidebar-label">Deposit</span>
+    </div>
+    <div class="sidebar-item">
+      <div class="icon-container-24">
+        <div style="position:absolute;inset:14.31% 7.37% 14.3% 12.52%;">
+          <img style="position:absolute;inset:0;width:100%;height:100%;display:block;" src="https://www.figma.com/api/mcp/asset/5b1bb9d6-18ce-47a8-ad79-cc744fc5d283" alt="">
+        </div>
+      </div>
+      <span class="sidebar-label">Send</span>
+    </div>
+    <div class="sidebar-item">
+      <div class="icon-container-24">
+        <div style="position:absolute;inset:6.25%;">
+          <img style="position:absolute;inset:0;width:100%;height:100%;display:block;" src="https://www.figma.com/api/mcp/asset/63062f7c-205b-48aa-9633-d14ea021cd0e" alt="">
+        </div>
+        <div style="position:absolute;inset:34.38%;">
+          <img style="position:absolute;inset:0;width:100%;height:100%;display:block;" src="https://www.figma.com/api/mcp/asset/90c3b634-9ada-4dc0-91d8-f8d75e734183" alt="">
+        </div>
+      </div>
+      <span class="sidebar-label">Buy/sell</span>
+    </div>
+  </div>
+</div>
+
+<!-- ASSET MODAL -->
+<div class="modal-skrim hidden" id="picker-overlay" onclick="closePicker(event)">
+  <div class="asset-modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title">Select a token</div>
+    </div>
+    <button class="modal-close" onclick="closePicker()">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20"><path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z"/></svg>
+    </button>
+    <div class="modal-search-wrap">
+      <div class="modal-search-inner">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none" stroke="#767676" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="20" height="20" style="flex-shrink:0"><circle cx="9" cy="9" r="6"/><path d="m16 16-3.5-3.5"/></svg>
+        <input type="text" placeholder="Search" id="picker-search" oninput="filterTokens()">
+      </div>
+    </div>
+    <div class="modal-token-list-scroll">
+      <div class="modal-token-list" id="token-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRMATION MODAL -->
+<div class="confirm-overlay hidden" id="confirm-overlay">
+  <div class="confirm-modal">
+    <div class="confirm-title">Review swap</div>
+    <div class="confirm-row">
+      <div class="confirm-label">You're selling</div>
+      <div class="confirm-amount" id="confirm-sell-amount"></div>
+      <div class="confirm-usd" id="confirm-sell-usd"></div>
+    </div>
+    <div class="confirm-swap-icon">
+      <img src="https://www.figma.com/api/mcp/asset/4af0e8da-e97c-4c4d-bda3-aaed3611fb2d" alt="">
+    </div>
+    <div class="confirm-row">
+      <div class="confirm-label">You're buying (estimated)</div>
+      <div class="confirm-amount" id="confirm-buy-amount"></div>
+      <div class="confirm-usd" id="confirm-buy-usd"></div>
+    </div>
+    <div class="confirm-details">
+      <div class="confirm-detail-row">
+        <span>Exchange rate</span>
+        <strong id="confirm-rate"></strong>
+      </div>
+      <div class="confirm-detail-row">
+        <span>Network fee</span>
+        <strong>≈ $1.20</strong>
+      </div>
+      <div class="confirm-detail-row">
+        <span>Price impact</span>
+        <strong>&lt; 0.01%</strong>
+      </div>
+    </div>
+    <div class="confirm-btns">
+      <button class="cancel-btn" onclick="closeConfirm()">Cancel</button>
+      <button class="confirm-btn" onclick="executeSwap()">Confirm swap</button>
+    </div>
+  </div>
+</div>
+
+<!-- SUCCESS MODAL -->
+<div class="confirm-overlay hidden" id="success-overlay">
+  <div class="success-modal">
+    <div class="success-icon">✓</div>
+    <div class="success-title">Swap submitted!</div>
+    <div class="success-desc" id="success-desc"></div>
+    <button class="success-btn" onclick="closeSuccess()">Done</button>
+  </div>
+</div>
+
+<script>
+// ── TOKEN IMAGES ──
+const TOKEN_IMAGES = {
+  ETH:   'https://assets.coingecko.com/coins/images/279/large/ethereum.png',
+  USDC:  'https://assets.coingecko.com/coins/images/6319/large/USD_Coin_icon.png',
+  USDT:  'https://assets.coingecko.com/coins/images/325/large/Tether.png',
+  BTC:   'https://assets.coingecko.com/coins/images/1/large/bitcoin.png',
+  WBTC:  'https://assets.coingecko.com/coins/images/7598/large/wrapped_bitcoin_wbtc.png',
+  BNB:   'https://assets.coingecko.com/coins/images/825/large/bnb-icon2_2x.png',
+  SOL:   'https://assets.coingecko.com/coins/images/4128/large/solana.png',
+  MATIC: 'https://assets.coingecko.com/coins/images/4713/large/matic-token-icon.png',
+  LINK:  'https://assets.coingecko.com/coins/images/877/large/chainlink-new-logo.png',
+  UNI:   'https://assets.coingecko.com/coins/images/12504/large/uni.jpg',
+  AAVE:  'https://assets.coingecko.com/coins/images/12645/large/AAVE.png',
+  DAI:   'https://assets.coingecko.com/coins/images/9956/large/Badge_Dai.png',
+};
+
+// ── TOKEN DATA ──
+const TOKENS = [
+  { symbol: 'ETH',   name: 'Ethereum',       color: '#627EEA', balance: 0.42,    price: 2315.24, change: +1.2  },
+  { symbol: 'USDC',  name: 'USD Coin',        color: '#2775CA', balance: 125.98,  price: 1.00,    change:  0.0  },
+  { symbol: 'USDT',  name: 'Tether',          color: '#26A17B', balance: 0,       price: 1.00,    change:  0.0  },
+  { symbol: 'BTC',   name: 'Bitcoin',         color: '#F7931A', balance: 0.0058,  price: 61200,   change: +0.8  },
+  { symbol: 'WBTC',  name: 'Wrapped Bitcoin', color: '#F7931A', balance: 0,       price: 61200,   change: +0.8  },
+  { symbol: 'BNB',   name: 'BNB',             color: '#F3BA2F', balance: 0,       price: 398.20,  change: -0.5  },
+  { symbol: 'SOL',   name: 'Solana',          color: '#9945FF', balance: 0,       price: 142.80,  change: +3.2  },
+  { symbol: 'XRP',   name: 'XRP',             color: '#00AAE4', balance: 0,       price: 0.52,    change: -1.1  },
+  { symbol: 'ADA',   name: 'Cardano',         color: '#0033AD', balance: 0,       price: 0.45,    change: +0.4  },
+  { symbol: 'AVAX',  name: 'Avalanche',       color: '#E84142', balance: 0,       price: 35.60,   change: +2.1  },
+  { symbol: 'MATIC', name: 'Polygon',         color: '#8247E5', balance: 210.0,   price: 0.58,    change: -0.9  },
+  { symbol: 'LINK',  name: 'Chainlink',       color: '#2A5ADA', balance: 18.5,    price: 14.20,   change: +1.8  },
+  { symbol: 'UNI',   name: 'Uniswap',         color: '#FF007A', balance: 7.2,     price: 8.50,    change: +0.6  },
+  { symbol: 'AAVE',  name: 'Aave',            color: '#B6509E', balance: 0,       price: 91.00,   change: -1.2  },
+  { symbol: 'DAI',   name: 'Dai',             color: '#F5AC37', balance: 0,       price: 1.00,    change:  0.0  },
+  { symbol: 'SHIB',  name: 'Shiba Inu',       color: '#FFA409', balance: 0,       price: 0.0000245,change:+5.2  },
+  { symbol: 'DOT',   name: 'Polkadot',        color: '#E6007A', balance: 0,       price: 7.20,    change: -0.3  },
+  { symbol: 'LTC',   name: 'Litecoin',        color: '#BEBEBE', balance: 0,       price: 83.40,   change: +1.5  },
+  { symbol: 'ATOM',  name: 'Cosmos',          color: '#2E3148', balance: 0,       price: 8.90,    change: +0.9  },
+  { symbol: 'ARB',   name: 'Arbitrum',        color: '#28A0F0', balance: 0,       price: 1.12,    change: +4.1  },
+  { symbol: 'OP',    name: 'Optimism',        color: '#FF0420', balance: 0,       price: 2.34,    change: +3.8  },
+  { symbol: 'MKR',   name: 'Maker',           color: '#1AAB9B', balance: 0,       price: 2100,    change: -0.7  },
+  { symbol: 'CRV',   name: 'Curve DAO',       color: '#3A3A3A', balance: 0,       price: 0.42,    change: +1.0  },
+  { symbol: 'SNX',   name: 'Synthetix',       color: '#00D1FF', balance: 0,       price: 2.18,    change: -2.1  },
+];
+
+// ── STATE ──
+let sellToken = TOKENS.find(t => t.symbol === 'USDC') || TOKENS[1];
+let buyToken  = null;
+let sellAmt   = '';
+let pickerFor = null;
+let activePct   = null;
+let loadingTimer = null;
+let isLoading = false;
+let isError = false;
+const MINIMUM_USD = 5;
+
+// ── BUY TOKEN BUTTON ──
+function updateBuyTokenBtn() {
+  const btn = document.getElementById('buy-token-btn');
+  const inner = document.getElementById('buy-token-btn-inner');
+  const balEl = document.getElementById('buy-balance-label');
+  if (buyToken) {
+    btn.classList.add('token-selected');
+    inner.innerHTML = `
+      <div class="tok-logo-sm" style="background:${buyToken.color}">${buyToken.symbol.slice(0,2)}</div>
+      <span class="buy-select-label" style="color:#000">${buyToken.symbol}</span>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" width="20" height="20" style="display:block;flex-shrink:0;color:#000"><path fill-rule="evenodd" d="M6.22 4.22a.75.75 0 011.06 0l3.25 3.25a.75.75 0 010 1.06l-3.25 3.25a.75.75 0 01-1.06-1.06L9.19 8 6.22 5.03a.75.75 0 010-1.06z" clip-rule="evenodd"/></svg>
+    `;
+    balEl.textContent = 'Balance: ' + buyToken.balance.toLocaleString() + ' ' + buyToken.symbol;
+  } else {
+    btn.classList.remove('token-selected');
+    inner.innerHTML = `
+      <span class="buy-select-label">Select token</span>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" width="20" height="20" style="display:block;flex-shrink:0"><path fill-rule="evenodd" d="M6.22 4.22a.75.75 0 011.06 0l3.25 3.25a.75.75 0 010 1.06l-3.25 3.25a.75.75 0 01-1.06-1.06L9.19 8 6.22 5.03a.75.75 0 010-1.06z" clip-rule="evenodd"/></svg>
+    `;
+    balEl.textContent = '--';
+  }
+}
+
+// ── INPUT HANDLING ──
+const sellInput = document.getElementById('sell-input');
+const buyInput  = document.getElementById('buy-input');
+
+// ── FORMAT & FONT-FIT HELPERS ──
+function addCommas(raw) {
+  if (!raw) return '';
+  const dot = raw.indexOf('.');
+  const int = dot === -1 ? raw : raw.slice(0, dot);
+  const dec = dot === -1 ? '' : raw.slice(dot);             // includes the dot
+  return int.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + dec;
+}
+
+const _mc = document.createElement('canvas');
+const _mx = _mc.getContext('2d');
+function fitFontSize(input) {
+  if (!input.value) { input.style.fontSize = '32px'; return; }
+  const avail = input.offsetWidth || 200;
+  let size = 32;
+  while (size > 11) {
+    _mx.font = `700 ${size}px "DM Sans", sans-serif`;
+    if (_mx.measureText(input.value).width <= avail - 4) break;
+    size -= 0.10;
+  }
+  input.style.fontSize = size + 'px';
+}
+
+// ── LOADING STATE HELPERS ──
+function showTypingIndicator() {
+  isLoading = true;
+  clearError();
+  document.getElementById('sell-usd').classList.add('hidden');
+  document.getElementById('typing-indicator-wrap').classList.remove('hidden');
+}
+
+function hideTypingIndicator() {
+  isLoading = false;
+  document.getElementById('typing-indicator-wrap').classList.add('hidden');
+}
+
+function showError(msg, redBalance = false) {
+  isError = true;
+  document.getElementById('sell-usd').classList.add('hidden');
+  const el = document.getElementById('sell-error');
+  el.textContent = msg;
+  el.classList.remove('hidden');
+  const balEl = document.querySelector('.sell-balance-right');
+  balEl.style.color = redBalance ? '#e40c58' : '';
+}
+
+function clearError() {
+  isError = false;
+  document.getElementById('sell-error').classList.add('hidden');
+  document.getElementById('sell-usd').classList.remove('hidden');
+  const balEl = document.querySelector('.sell-balance-right');
+  balEl.style.color = '';
+}
+
+// ── INPUT LISTENER ──
+sellInput.addEventListener('input', () => {
+  // Strip commas, keep only digits and one dot
+  let raw = sellInput.value.replace(/,/g, '').replace(/[^0-9.]/g, '');
+  const firstDot = raw.indexOf('.');
+  if (firstDot !== -1) raw = raw.slice(0, firstDot + 1) + raw.slice(firstDot + 1).replace(/\./g, '');
+
+  // Split and enforce limits: 10 natural digits, 6 decimals
+  const [intRaw = '', decRaw] = raw.split('.');
+  const intClamped = intRaw.slice(0, 10).replace(/^0+(\d)/, '$1'); // strip leading zeros
+  const decClamped = decRaw !== undefined ? decRaw.slice(0, 6) : undefined;
+
+  sellAmt = decClamped !== undefined
+    ? intClamped + '.' + decClamped
+    : raw.endsWith('.') ? intClamped + '.' : intClamped;
+
+  sellInput.value = addCommas(sellAmt);
+  fitFontSize(sellInput);
+
+  activePct = null;
+  document.querySelectorAll('.pct-pill').forEach(p => p.classList.remove('active'));
+
+  const amt = parseFloat(sellAmt) || 0;
+  sellInput.style.color = sellAmt ? '#000' : '#a5a5a5';
+  if (amt > 0) {
+    // Show typing indicator immediately, debounce the resolved update
+    showTypingIndicator();
+    clearTimeout(loadingTimer);
+    loadingTimer = setTimeout(() => {
+      hideTypingIndicator();
+      updateUI();
+    }, 1000);
+  } else {
+    clearTimeout(loadingTimer);
+    hideTypingIndicator();
+    updateUI();
+  }
+});
+
+function setPct(pct) {
+  const raw = (sellToken.balance * pct).toFixed(6).replace(/\.?0+$/, '');
+  sellAmt = raw;
+  sellInput.value = addCommas(raw);
+  sellInput.style.color = '#000';
+  fitFontSize(sellInput);
+  activePct = pct;
+  document.querySelectorAll('.pct-pill').forEach(p => p.classList.remove('active'));
+  const ids = { 0.25: 'pct-25', 0.5: 'pct-50', 0.75: 'pct-75', 1: 'pct-max' };
+  document.getElementById(ids[pct]).classList.add('active');
+  showTypingIndicator();
+  clearTimeout(loadingTimer);
+  loadingTimer = setTimeout(() => {
+    hideTypingIndicator();
+    updateUI();
+  }, 1000);
+}
+
+function updateUI() {
+  const amt = parseFloat(sellAmt) || 0;
+
+  const sellUsd = amt * sellToken.price;
+
+  // sell input color
+  sellInput.style.color = sellAmt ? '#000' : '#a5a5a5';
+
+  // error checks
+  const notEnoughFunds = amt > 0 && amt > sellToken.balance;
+  const belowMinimum   = amt > 0 && !notEnoughFunds && sellUsd < MINIMUM_USD;
+
+  if (notEnoughFunds) {
+    showError(`Not enough ${sellToken.symbol}`, true);
+  } else if (belowMinimum) {
+    const minRaw = MINIMUM_USD / sellToken.price;
+    const minToken = minRaw >= 1
+      ? minRaw.toFixed(2).replace(/\.?0+$/, '')
+      : minRaw.toPrecision(2).replace(/\.?0+$/, '');
+    showError(`Minimum ${minToken} ${sellToken.symbol} ($${MINIMUM_USD})`);
+  } else {
+    clearError();
+    if (!isLoading) {
+      document.getElementById('sell-usd').textContent = amt > 0 ? '$' + sellUsd.toFixed(2) : '$0.00';
+    }
+  }
+
+  renderSellQuickTokens();
+  renderBuyQuickTokens();
+
+  // swap button always visible
+  document.getElementById('swap-arrows').classList.remove('hidden');
+
+  // buy amount + rate
+  if (amt > 0 && buyToken) {
+    const rate = sellToken.price / buyToken.price;
+    const buyAmt = (amt * rate).toFixed(6).replace(/\.?0+$/, '');
+    buyInput.value = addCommas(buyAmt);
+    buyInput.style.color = '#000';
+    fitFontSize(buyInput);
+    document.getElementById('buy-usd').textContent = '$' + sellUsd.toFixed(2);
+  } else {
+    buyInput.value = '0';
+    buyInput.style.color = '#a5a5a5';
+    fitFontSize(buyInput);
+    document.getElementById('buy-usd').textContent = '$0.00';
+  }
+
+  // main button state
+  const btn = document.getElementById('main-btn');
+  const wasInvisible = btn.classList.contains('invisible');
+
+  let newClass, newText;
+  if (notEnoughFunds) {
+    newText  = `Not enough ${sellToken.symbol}`;
+    newClass = 'main-btn disabled';
+  } else if (belowMinimum) {
+    newText  = `Minimum $${MINIMUM_USD} allowed`;
+    newClass = 'main-btn disabled';
+  } else if (amt > 0 && !buyToken) {
+    newText  = 'Select a token';
+    newClass = 'main-btn disabled';
+  } else if (amt > 0) {
+    newText  = 'Swap';
+    newClass = 'main-btn active';
+  } else {
+    newText  = 'Enter amount';
+    newClass = 'main-btn disabled';
+  }
+
+  const becomingVisible = wasInvisible && !newClass.includes('invisible');
+  btn.textContent = newText;
+  btn.className = newClass;
+  if (becomingVisible) {
+    void btn.offsetWidth; // force reflow so animation re-fires
+    btn.classList.add('entering');
+    btn.addEventListener('animationend', () => btn.classList.remove('entering'), { once: true });
+  }
+}
+
+// ── QUICK TOKEN SELECTION ──
+function attachQuickTokens(wrapId, bubblesId) {
+  const wrap = document.getElementById(wrapId);
+  const bubbles = document.getElementById(bubblesId);
+  if (!wrap || !bubbles) return;
+  const hide = () => setTimeout(() => {
+    if (!bubbles.matches(':hover') && !wrap.matches(':hover')) bubbles.classList.remove('visible');
+  }, 100);
+  wrap.addEventListener('mouseenter', () => bubbles.classList.add('visible'));
+  wrap.addEventListener('mouseleave', hide);
+  bubbles.addEventListener('mouseleave', hide);
+}
+const BUY_QUICK_SYMBOLS = ['BTC', 'ETH', 'SOL', 'USDT', 'MATIC'];
+
+function renderBuyQuickTokens() {
+  const container = document.getElementById('buy-quick-tokens');
+  const candidates = BUY_QUICK_SYMBOLS
+    .map(s => TOKENS.find(t => t.symbol === s))
+    .filter(t => t && t.symbol !== sellToken.symbol)
+    .slice(0, 4);
+  container.innerHTML = candidates.map(t => {
+    const img = TOKEN_IMAGES[t.symbol]
+      ? `<img class="quick-token-circle" src="${TOKEN_IMAGES[t.symbol]}" alt="${t.symbol}">`
+      : `<div class="quick-token-circle" style="background:${t.color};display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:700;color:#fff">${t.symbol.slice(0,2)}</div>`;
+    return `<div class="quick-token-wrap">
+      <button class="quick-token-btn" onclick="event.stopPropagation();quickSelectToken('${t.symbol}')">${img}</button>
+      <div class="quick-token-tooltip">${t.symbol}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderSellQuickTokens() {
+  const container = document.getElementById('sell-quick-tokens');
+  const candidates = TOKENS
+    .filter(t => t.balance > 0 && t.symbol !== sellToken.symbol)
+    .slice(0, 5);
+  container.innerHTML = candidates.map(t => {
+    const img = TOKEN_IMAGES[t.symbol]
+      ? `<img class="quick-token-circle" src="${TOKEN_IMAGES[t.symbol]}" alt="${t.symbol}">`
+      : `<div class="quick-token-circle" style="background:${t.color};display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:700;color:#fff">${t.symbol.slice(0,2)}</div>`;
+    return `<div class="quick-token-wrap">
+      <button class="quick-token-btn" onclick="event.stopPropagation();quickSelectSell('${t.symbol}')">${img}</button>
+      <div class="quick-token-tooltip">${t.symbol}</div>
+    </div>`;
+  }).join('');
+}
+
+attachQuickTokens('sell-token-wrap', 'sell-quick-tokens');
+attachQuickTokens('buy-token-wrap', 'buy-quick-tokens');
+
+function quickSelectSell(symbol) {
+  const tok = TOKENS.find(t => t.symbol === symbol);
+  if (!tok || (buyToken && tok.symbol === buyToken.symbol)) return;
+  sellToken = tok;
+  sellAmt = '';
+  activePct = null;
+  document.querySelectorAll('.pct-pill').forEach(p => p.classList.remove('active'));
+  document.getElementById('sell-token-icon').style.background = tok.color;
+  document.getElementById('sell-token-icon').textContent = tok.symbol.slice(0, 2);
+  document.getElementById('sell-token-label').textContent = tok.symbol;
+  document.getElementById('sell-input').value = '';
+  fitFontSize(document.getElementById('sell-input'));
+  document.getElementById('sell-balance-label').textContent = tok.balance.toLocaleString() + ' ' + tok.symbol;
+  document.getElementById('sell-usd').textContent = '$0.00';
+  document.getElementById('sell-input').style.color = '#a5a5a5';
+  document.getElementById('sell-quick-tokens').classList.remove('visible');
+  clearTimeout(loadingTimer);
+  clearError();
+  updateUI();
+}
+
+function quickSelectToken(symbol) {
+  const tok = TOKENS.find(t => t.symbol === symbol);
+  if (!tok || tok.symbol === sellToken.symbol) return;
+  buyToken = tok;
+  updateBuyTokenBtn();
+  document.getElementById('buy-quick-tokens').classList.remove('visible');
+  clearTimeout(loadingTimer);
+  clearError();
+  updateUI();
+}
+
+// ── SELLING CARD FOCUS + HOVER STATE ──
+const sellingCard = document.getElementById('selling-card');
+sellInput.addEventListener('focus',      () => sellingCard.classList.add('focused'));
+sellInput.addEventListener('blur',       () => sellingCard.classList.remove('focused'));
+sellInput.addEventListener('mouseenter', () => sellingCard.classList.add('input-hover'));
+sellInput.addEventListener('mouseleave', () => sellingCard.classList.remove('input-hover'));
+
+// ── SWAP TOKENS ──
+function swapTokens() {
+  if (!buyToken) return;
+  const icon = document.querySelector('.swap-arrows-icon');
+  icon.classList.toggle('rotated');
+
+  const prevSell = sellToken;
+  const prevBuy  = buyToken;
+
+  sellToken = prevBuy;
+  buyToken  = prevSell;
+
+  // Update sell token button
+  document.getElementById('sell-token-icon').style.background = sellToken.color;
+  document.getElementById('sell-token-icon').textContent = sellToken.symbol.slice(0, 2);
+  document.getElementById('sell-token-label').textContent = sellToken.symbol;
+  document.getElementById('sell-balance-label').textContent = sellToken.balance.toFixed(2) + ' ' + sellToken.symbol;
+
+  // Update buy token button
+  updateBuyTokenBtn();
+
+  // Carry the previous buy amount over as the new sell amount
+  const prevBuyAmt = sellAmt
+    ? String((parseFloat(sellAmt) * (prevSell.price / prevBuy.price)).toFixed(6)).replace(/\.?0+$/, '')
+    : '';
+  sellAmt = prevBuyAmt;
+  sellInput.value = prevBuyAmt ? addCommas(prevBuyAmt) : '';
+  sellInput.style.color = prevBuyAmt ? '#000' : '#a5a5a5';
+  fitFontSize(sellInput);
+  activePct = null;
+  clearTimeout(loadingTimer);
+  clearError();
+  document.querySelectorAll('.pct-pill').forEach(p => p.classList.remove('active'));
+
+  updateUI();
+}
+
+// ── PICKER ──
+function openPicker(side) {
+  pickerFor = side;
+document.getElementById('picker-search').value = '';
+  renderTokenList(TOKENS);
+  document.getElementById('picker-overlay').classList.remove('hidden');
+}
+
+function closePicker(e) {
+  if (!e || e.target === document.getElementById('picker-overlay')) {
+    document.getElementById('picker-overlay').classList.add('hidden');
+  }
+}
+
+function filterTokens() {
+  const q = document.getElementById('picker-search').value.toLowerCase();
+  const filtered = TOKENS.filter(t =>
+    t.symbol.toLowerCase().includes(q) || t.name.toLowerCase().includes(q)
+  );
+  renderTokenList(filtered);
+}
+
+function fmtRate(r) {
+  const s = r.toFixed(4);
+  // strip trailing zeros but keep at least 2 decimal places
+  return s.replace(/(\.\d*?)0+$/, '$1').replace(/\.$/, '.00').replace(/^(\d+\.\d)$/, '$10');
+}
+
+function fmtPrice(p) {
+  if (p >= 1000) return '$' + p.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  if (p >= 1)    return '$' + p.toFixed(2);
+  if (p >= 0.01) return '$' + p.toFixed(4);
+  return '$' + p.toPrecision(4);
+}
+
+function makeSectionLabel(text) {
+  const wrap = document.createElement('div');
+  wrap.className = 'modal-tok-section-label';
+  wrap.innerHTML = `<hr><span>${text}</span>`;
+  return wrap;
+}
+
+function renderTokenList(tokens) {
+  const list = document.getElementById('token-list');
+  list.innerHTML = '';
+  const sorted = pickerFor === 'sell'
+    ? [...tokens].sort((a, b) => (b.balance > 0) - (a.balance > 0))
+    : tokens;
+  const header = document.createElement('div');
+  header.className = 'modal-tok-list-header';
+  header.innerHTML = `<hr><div class="modal-tok-list-header-row"><span>Token</span><span>${pickerFor === 'sell' ? 'Balance' : 'Price'}</span></div>`;
+  list.appendChild(header);
+  sorted.forEach(tok => {
+    const div = document.createElement('div');
+    div.className = 'modal-token-row';
+    const changeClass = tok.change > 0 ? 'up' : tok.change < 0 ? 'down' : 'flat';
+    const changeStr   = tok.change > 0 ? '+' + tok.change.toFixed(1) + '%'
+                      : tok.change < 0 ? tok.change.toFixed(1) + '%'
+                      : '0.00%';
+    div.innerHTML = `
+      <div class="modal-tok-logo" style="background:${tok.color}">${tok.symbol.slice(0,2)}</div>
+      <div class="modal-tok-info">
+        <div class="modal-tok-symbol">${tok.symbol}</div>
+        <div class="modal-tok-name">${tok.name}</div>
+      </div>
+      ${pickerFor === 'sell'
+        ? tok.balance > 0
+          ? `<div class="modal-tok-balance-wrap">
+              <div class="modal-tok-balance">${tok.balance.toLocaleString() + ' ' + tok.symbol}</div>
+              <div class="modal-tok-balance-usd">$${(tok.balance * tok.price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+            </div>`
+          : `<div class="modal-tok-balance modal-tok-balance--zero">0 ${tok.symbol}</div>`
+        : `<div class="modal-tok-balance modal-tok-balance--zero">${fmtPrice(tok.price)}</div>`
+      }
+    `;
+    div.addEventListener('click', () => selectToken(tok));
+    list.appendChild(div);
+  });
+}
+
+function selectToken(tok) {
+  if (pickerFor === 'sell') {
+    // If same as buy, swap them
+    if (buyToken && buyToken.symbol === tok.symbol) {
+      const prev = sellToken;
+      sellToken = tok;
+      buyToken = prev;
+      updateBuyTokenBtn();
+    } else {
+      sellToken = tok;
+    }
+    document.getElementById('sell-token-icon').style.background = sellToken.color;
+    document.getElementById('sell-token-icon').textContent = sellToken.symbol.slice(0, 2);
+    document.getElementById('sell-token-label').textContent = sellToken.symbol;
+    document.getElementById('sell-balance-label').textContent = sellToken.balance.toFixed(2) + ' ' + sellToken.symbol;
+  } else {
+    if (tok.symbol === sellToken.symbol) {
+      const prev = buyToken;
+      buyToken = tok;
+      sellToken = prev;
+      document.getElementById('sell-token-icon').style.background = sellToken.color;
+      document.getElementById('sell-token-icon').textContent = sellToken.symbol.slice(0, 2);
+      document.getElementById('sell-token-label').textContent = sellToken.symbol;
+      document.getElementById('sell-balance-label').textContent = sellToken.balance.toFixed(2) + ' ' + sellToken.symbol;
+    } else {
+      buyToken = tok;
+    }
+    updateBuyTokenBtn();
+  }
+  document.getElementById('picker-overlay').classList.add('hidden');
+  if (pickerFor === 'sell') {
+    sellAmt = '';
+    sellInput.value = '';
+    fitFontSize(sellInput);
+    activePct = null;
+    document.querySelectorAll('.pct-pill').forEach(p => p.classList.remove('active'));
+  }
+  clearTimeout(loadingTimer);
+  clearError();
+  updateUI();
+}
+
+// ── MAIN BUTTON ──
+function handleMainBtn() {
+  const amt = parseFloat(sellAmt) || 0;
+  if (amt <= 0 || !buyToken) return;
+  if (amt > sellToken.balance) {
+    alert(`Insufficient balance. You only have ${sellToken.balance} ${sellToken.symbol}.`);
+    return;
+  }
+
+  // Fill confirmation modal
+  const rate = sellToken.price / buyToken.price;
+  const buyAmt = (amt * rate).toFixed(6).replace(/\.?0+$/, '');
+  const sellUsd = (amt * sellToken.price).toFixed(2);
+
+  document.getElementById('confirm-sell-amount').textContent = amt + ' ' + sellToken.symbol;
+  document.getElementById('confirm-sell-usd').textContent = '$' + sellUsd;
+  document.getElementById('confirm-buy-amount').textContent = buyAmt + ' ' + buyToken.symbol;
+  document.getElementById('confirm-buy-usd').textContent = '≈ $' + sellUsd;
+  document.getElementById('confirm-rate').textContent = `1 ${sellToken.symbol} ≈ ${rate.toFixed(4)} ${buyToken.symbol}`;
+
+  document.getElementById('confirm-overlay').classList.remove('hidden');
+}
+
+function closeConfirm() {
+  document.getElementById('confirm-overlay').classList.add('hidden');
+}
+
+function executeSwap() {
+  const amt = parseFloat(sellAmt) || 0;
+  const rate = sellToken.price / buyToken.price;
+  const buyAmt = (amt * rate).toFixed(6).replace(/\.?0+$/, '');
+
+  document.getElementById('confirm-overlay').classList.add('hidden');
+  document.getElementById('success-desc').textContent =
+    `Your swap of ${amt} ${sellToken.symbol} → ${buyAmt} ${buyToken.symbol} has been submitted to the network.`;
+  document.getElementById('success-overlay').classList.remove('hidden');
+}
+
+function closeSuccess() {
+  document.getElementById('success-overlay').classList.add('hidden');
+  // Reset form
+  sellInput.value = '';
+  sellAmt = '';
+  fitFontSize(sellInput);
+  buyToken = null;
+  updateBuyTokenBtn();
+  activePct = null;
+  clearTimeout(loadingTimer);
+  clearError();
+  document.querySelectorAll('.pct-pill').forEach(p => p.classList.remove('active'));
+  updateUI();
+}
+
+// Init
+renderSellQuickTokens();
+renderBuyQuickTokens();
+updateBuyTokenBtn();
+updateUI();
+</script>
+</body>
+</html>
