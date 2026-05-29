@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>MEW — Global Search</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{width:100%;height:100%;background:#f5f5f5;overflow:hidden;font-family:'DM Sans',sans-serif;}
+.frame{position:fixed;top:0;left:0;width:100vw;height:100vh;overflow:hidden;}
+.scrim{position:absolute;inset:0;background:rgba(0,0,0,0.4);opacity:0;pointer-events:none;transition:opacity .2s;z-index:11;}
+.scrim.on{opacity:1;pointer-events:all;}
+/* Navbar */
+.nav{position:fixed;top:0;left:0;width:100vw;height:76px;background:#fff;display:flex;align-items:center;padding:0 20px;box-shadow:0 3px 12px -6px rgba(0,0,0,0.3);z-index:10;overflow:hidden;}
+.nav-left{display:flex;align-items:center;gap:32px;flex-shrink:0;}
+.nav-spacer{flex:1;}
+.nav-right{display:flex;align-items:center;gap:16px;flex-shrink:0;}
+.nav-logo{width:105px;height:36px;object-fit:cover;display:block;flex-shrink:0;}
+.nav-links{display:flex;align-items:center;gap:8px;}
+.nav-link{display:flex;align-items:center;gap:2px;padding:6px 8px;border-radius:16px;font-size:14px;font-weight:600;color:#1a1a1a;letter-spacing:-0.02em;cursor:pointer;white-space:nowrap;}
+.nav-link.active{background:#e6e6e6;}
+.nav-link svg{width:20px;height:20px;flex-shrink:0;}
+/* Search bar — repositioned inside navbar */
+.sb{position:absolute;width:240px;height:40px;display:flex;align-items:center;gap:8px;padding:0 10px;border-radius:24px;background:#f5f5f5;border:1.5px solid transparent;cursor:text;z-index:12;transition:background .15s,border-color .15s,box-shadow .15s;}
+.sb.on{background:#fff;border-color:rgba(0,0,0,0.12);box-shadow:0 1px 6px rgba(0,0,0,0.1);}
+.sb svg{flex-shrink:0;width:20px;height:20px;}
+.sb input{flex:1;min-width:0;border:none;outline:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:14px;color:#1a1a1a;}
+.sb input::placeholder{color:#767676;}
+.nav-hamburger{display:none;width:40px;height:40px;border-radius:24px;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
+.nav-hamburger:hover{background:#f5f5f5;}
+.nav-hamburger svg{width:20px;height:20px;}
+@media(max-width:1047px){
+  .nav-links{display:none;}
+  .nav-hamburger{display:flex;}
+  .nav-logo{height:32px;width:auto;}
+  .nav-left{gap:24px;}
+}
+@media(max-width:1229px){
+  #SB-slot{width:40px!important;}
+  .sb{width:40px;height:40px;padding:0;border-radius:50%;justify-content:center;background:#f5f5f5;border-color:transparent;}
+  .sb.on{background:#f5f5f5;border-color:transparent;box-shadow:none;}
+  .sb input{display:none;}
+}
+.dd{position:absolute;width:420px;background:#fff;border-radius:20px;padding:12px;box-shadow:0 8px 32px rgba(0,0,0,0.14);z-index:12;display:none;max-height:700px;overflow-y:auto;}
+.dd.on{display:block;}
+/* Pill buttons (network / wallet) */
+.nav-pill{display:flex;align-items:center;gap:8px;height:40px;padding:0 10px 0 8px;border-radius:20px;border:1px solid #e6e6e6;box-shadow:0 1px 4px rgba(0,0,0,0.12);font-size:14px;font-weight:600;color:#1a1a1a;letter-spacing:-0.02em;cursor:pointer;white-space:nowrap;background:#fff;}
+.nav-pill-icon{position:relative;width:24px;height:24px;flex-shrink:0;}
+.nav-pill-icon img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;}
+.nav-pill-icon-round{border-radius:99px;overflow:hidden;}
+.nav-pill-label{display:flex;align-items:center;gap:4px;}
+.nav-pill-chevron{position:relative;width:20px;height:20px;flex-shrink:0;}
+.nav-pill-chevron .chv-inner{position:absolute;top:25%;left:40%;right:31.25%;bottom:25.09%;}
+.nav-pill-chevron .chv-inner img{position:absolute;inset:0;width:100%;height:100%;display:block;max-width:none;}
+/* Icon buttons */
+.nav-icons{display:flex;align-items:center;gap:8px;}
+.nav-icon{width:40px;height:40px;border-radius:24px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
+.nav-icon:hover{background:#f5f5f5;}
+.nav-icon-inner{position:relative;width:24px;height:24px;flex-shrink:0;}
+.nav-icon-inner .ico-vec{position:absolute;}
+.nav-icon-inner .ico-vec img{position:absolute;inset:0;width:100%;height:100%;display:block;max-width:none;}
+.sec-def{font-size:14px;color:#1a1a1a;padding:10px 12px 8px;display:flex;gap:3px;}
+.sec-def .m{color:#a5a5a5;}
+.sec-srch{font-size:14px;color:#1a1a1a;padding:10px 12px 8px;display:none;}
+.sec-srch .cnt{color:#a5a5a5;}
+.vs .sec-def{display:none;}
+.vs .sec-srch{display:block;}
+.vs #recent-section{display:none;}
+.fn{font-size:12px;font-weight:400;color:#a5a5a5;white-space:nowrap;display:block;}
+.sm{display:none;align-items:center;gap:8px;padding:6px 12px 4px;cursor:pointer;}
+.sm-line{flex:1;height:1px;background:#efefef;}
+.sm span{font-size:12px;font-weight:600;color:#1a1a1a;white-space:nowrap;}
+.sm svg{width:14px;height:14px;flex-shrink:0;}
+.vs .sm{display:flex;}
+.div{height:1px;background:#efefef;margin:8px 0;}
+.vs .div{display:none;}
+.row{display:flex;align-items:center;gap:12px;padding:8px 12px;border-radius:12px;cursor:pointer;transition:background .12s,max-height .22s ease,opacity .18s ease;max-height:60px;opacity:1;overflow:hidden;}
+.row:hover{background:#f7f7f7;}
+.row.h{max-height:0!important;opacity:0!important;padding-top:0!important;padding-bottom:0!important;pointer-events:none!important;}
+.ico{flex-shrink:0;width:32px;height:32px;border-radius:50%;overflow:hidden;background:transparent;display:flex;}
+.ico img{width:100%;height:100%;object-fit:contain;display:block;}
+.ico-o{overflow:visible!important;}.ico-stock .inner.ico-o{overflow:hidden!important;}
+.ico-o .br{position:absolute;inset:-3.13%;overflow:hidden;border-radius:50%;}
+.ico-o .br img,.ico-o .tl img,.ico-o .lg img{width:100%;height:100%;display:block;object-fit:cover;}
+.ico-o .tl{position:absolute;inset:15%;overflow:hidden;}
+.ico-o .lg{position:absolute;inset:25%;overflow:hidden;display:flex;align-items:center;justify-content:center;}
+.ico-stock{position:relative;flex-shrink:0;width:36px;height:36px;border-radius:50%;padding:2px;background:linear-gradient(135deg,#40E0D0,#7ED06D,#D5AB00,#FF8C00,#FF5D3D,#FF5D3D,#FF8C00,#40E0D0);display:flex;align-items:center;justify-content:center;}
+.ico-stock .inner{width:100%;height:100%;border-radius:50%;overflow:hidden;background:white;display:flex;align-items:center;justify-content:center;}
+.ico-stock .inner img{width:100%;height:100%;object-fit:contain;display:block;border-radius:50%;}
+.info{flex:1;min-width:0;}
+.nr{display:flex;flex-direction:column;white-space:nowrap;overflow:hidden;}
+.tk{font-size:14px;font-weight:600;color:#1a1a1a;letter-spacing:-0.02em;display:flex;align-items:center;}
+.og{background:linear-gradient(-90deg,#40E0D0 0%,#7ED06D 17%,#D5AB00 35%,#FF8C00 43%,#FF5D3D 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:600;}
+.price{text-align:right;flex-shrink:0;}
+.pv{font-size:14px;color:#1a1a1a;line-height:1.4;}
+.pc{font-size:12px;font-weight:600;letter-spacing:-0.02em;}
+.up{color:#05c0a5;}.dn{color:#e40c58;}
+</style>
+</head>
+<body>
+<div class="frame" id="F">
+<div class="scrim" id="SC"></div>
+<div class="sb" id="SB" style="position:absolute;">
+  <svg viewBox="0 0 20 20" fill="none"><path d="M17.5 17.5L13.875 13.875M15.833 9.167C15.833 12.848 12.849 15.833 9.167 15.833C5.485 15.833 2.5 12.848 2.5 9.167C2.5 5.485 5.485 2.5 9.167 2.5C12.849 2.5 15.833 5.485 15.833 9.167Z" stroke="#767676" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <input id="IN" type="text" placeholder="Search for an asset" autocomplete="off" spellcheck="false"/>
+</div>
+<nav class="nav">
+  <div class="nav-left">
+    <img class="nav-logo" src="https://www.figma.com/api/mcp/asset/a7004684-5143-4809-8e03-b856d2a167bc" alt="MEW Portfolio"/>
+    <div class="nav-links">
+      <div class="nav-link active">Home</div>
+      <div class="nav-link">Stocks</div>
+      <div class="nav-link">Crypto</div>
+      <div class="nav-link">Perpetuals</div>
+      <div class="nav-link">More
+        <svg viewBox="0 0 20 20" fill="none"><path d="M5 7.5l5 5 5-5" stroke="#1a1a1a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+    <div class="nav-hamburger">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h14M3 15h14" stroke="#1a1a1a" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </div>
+  </div>
+  <div class="nav-spacer"></div>
+  <div class="nav-right">
+    <div id="SB-slot" style="width:240px;height:40px;flex-shrink:0;"></div>
+    <div class="nav-pill">
+      <div class="nav-pill-icon"><img src="https://www.figma.com/api/mcp/asset/1a62c8f1-86e4-47d6-805c-ac97d1e3e56d" alt="Ethereum"/></div>
+      <div class="nav-pill-label">
+        <span>Ethereum</span>
+        <div class="nav-pill-chevron"><div class="chv-inner"><img src="https://www.figma.com/api/mcp/asset/0f4e2681-0bee-431d-b7ca-62b72aa8f3a7" alt=""/></div></div>
+      </div>
+    </div>
+    <div class="nav-pill">
+      <div class="nav-pill-icon nav-pill-icon-round"><img src="https://www.figma.com/api/mcp/asset/adbcbeea-1b4b-4dea-88ba-fefc47d2a943" alt="Wallet"/></div>
+      <div class="nav-pill-label">
+        <span>0xB694...884a</span>
+        <div class="nav-pill-chevron"><div class="chv-inner"><img src="https://www.figma.com/api/mcp/asset/0f4e2681-0bee-431d-b7ca-62b72aa8f3a7" alt=""/></div></div>
+      </div>
+    </div>
+    <div class="nav-icons">
+      <div class="nav-icon">
+        <div class="nav-icon-inner">
+          <div class="ico-vec" style="inset:9.38% 11.85% 9.38% 11.84%;"><img src="https://www.figma.com/api/mcp/asset/4a5c3b14-6522-4bb8-b615-6f80c0f7e00e" alt="Settings"/></div>
+        </div>
+      </div>
+      <div class="nav-icon">
+        <div class="nav-icon-inner">
+          <div class="ico-vec" style="inset:9.38% 12.24% 9.4% 12.25%;"><img src="https://www.figma.com/api/mcp/asset/273d7fe2-b880-4ccb-b724-49b2f138969f" alt="Notifications"/></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<div class="dd" id="DD"><div id="recent-section">
+<div style="display:flex;align-items:center;gap:6px;padding:10px 12px 8px;"><span style="font-size:14px;color:#1a1a1a;">Opened recently</span></div>
+<div style="display:flex;flex-wrap:wrap;gap:8px;padding:8px 12px 8px;">
+<!-- ETH -->
+<div style="display:inline-flex;align-items:center;gap:8px;background:#f5f5f5;border-radius:8px;padding:6.5px 8px 6.5px 6px;cursor:pointer;transition:background .12s;" onmouseenter="this.style.background='#ebebeb'" onmouseleave="this.style.background='#f5f5f5'"><div style="position:relative;width:18px;height:18px;flex-shrink:0;overflow:hidden;"><img src="https://www.figma.com/api/mcp/asset/2b8221ef-f73a-4d33-92b6-2b877dd335e4" style="position:absolute;inset:0;width:100%;height:100%;"/><div style="position:absolute;left:50%;transform:translateX(-50%);top:14.38%;bottom:14.37%;aspect-ratio:784.37/1277.39;overflow:hidden;"><img src="https://www.figma.com/api/mcp/asset/ffe51100-fe95-478a-b606-f85db24ee3f2" style="position:absolute;inset:0;width:100%;height:100%;"/></div></div><span style="font-size:11px;font-weight:700;color:#000;letter-spacing:0.6px;line-height:15px;text-transform:uppercase;white-space:nowrap;font-family:'DM Sans',sans-serif;">ETH</span></div>
+<!-- NTFLXON -->
+<div style="display:inline-flex;align-items:center;gap:8px;background:#f5f5f5;border-radius:8px;padding:6.5px 8px 6.5px 6px;cursor:pointer;transition:background .12s;" onmouseenter="this.style.background='#ebebeb'" onmouseleave="this.style.background='#f5f5f5'"><div style="position:relative;width:18px;height:18px;flex-shrink:0;"><img src="https://www.figma.com/api/mcp/asset/17313505-e6d9-42ff-b94f-34bc137b3c0d" style="position:absolute;inset:-3.13%;width:106.25%;height:106.25%;"/><img src="https://www.figma.com/api/mcp/asset/a72952bd-7402-4794-8467-d2a3d1175d44" style="position:absolute;inset:15%;width:70%;height:70%;"/><div style="position:absolute;inset:25%;overflow:hidden;"><img src="https://www.figma.com/api/mcp/asset/b50281f8-d013-4bab-9da7-03ccaa653cc0" style="position:absolute;top:50%;left:23.87%;right:23.87%;transform:translateY(-50%);width:52.26%;display:block;"/></div></div><span style="font-size:11px;font-weight:700;color:#000;letter-spacing:0.6px;line-height:15px;text-transform:uppercase;white-space:nowrap;font-family:'DM Sans',sans-serif;">NTFLX<span style="background:linear-gradient(-90deg,#40E0D0 0%,#55DAA2 6.6%,#7ED06D 17%,#AAC137 25%,#D5AB00 35%,#FF8C00 43%,#FF8C00 55%,#FF7526 77.5%,#FF5D3D 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">ON</span></span></div>
+<!-- WBTC -->
+<div style="display:inline-flex;align-items:center;gap:8px;background:#f5f5f5;border-radius:8px;padding:6.5px 8px 6.5px 6px;cursor:pointer;transition:background .12s;" onmouseenter="this.style.background='#ebebeb'" onmouseleave="this.style.background='#f5f5f5'"><div style="position:relative;width:18px;height:18px;flex-shrink:0;overflow:hidden;"><img src="https://www.figma.com/api/mcp/asset/aa01666f-9e81-4f96-ae53-bd4e2db9b2fe" style="position:absolute;inset:0;width:100%;height:100%;"/><img src="https://www.figma.com/api/mcp/asset/24bf5136-baa4-4bd0-b89c-b2fca40960b3" style="position:absolute;inset:0;width:100%;height:100%;border-radius:999px;object-fit:cover;"/></div><span style="font-size:11px;font-weight:700;color:#000;letter-spacing:0.6px;line-height:15px;text-transform:uppercase;white-space:nowrap;font-family:'DM Sans',sans-serif;">WBTC</span></div>
+<!-- HOOD -->
+<div style="display:inline-flex;align-items:center;gap:8px;background:#f5f5f5;border-radius:8px;padding:6.5px 8px 6.5px 6px;cursor:pointer;transition:background .12s;" onmouseenter="this.style.background='#ebebeb'" onmouseleave="this.style.background='#f5f5f5'"><div style="position:relative;width:18px;height:18px;flex-shrink:0;border-radius:999px;overflow:hidden;"><img src="https://www.figma.com/api/mcp/asset/89023703-88c9-43b9-92b5-411830f9d538" style="position:absolute;inset:0;width:100%;height:100%;"/><img src="https://www.figma.com/api/mcp/asset/848e0620-61ae-4428-952c-ac807bfdc7d3" style="position:absolute;inset:0;width:100%;height:100%;"/></div><span style="font-size:11px;font-weight:700;color:#000;letter-spacing:0.6px;line-height:15px;text-transform:uppercase;white-space:nowrap;font-family:'DM Sans',sans-serif;">HOOD</span></div>
+<!-- NVDAON -->
+<div style="display:inline-flex;align-items:center;gap:8px;background:#f5f5f5;border-radius:8px;padding:6.5px 8px 6.5px 6px;cursor:pointer;transition:background .12s;" onmouseenter="this.style.background='#ebebeb'" onmouseleave="this.style.background='#f5f5f5'"><div style="position:relative;width:18px;height:18px;flex-shrink:0;"><img src="https://www.figma.com/api/mcp/asset/e42957f6-c2a2-47e7-a47d-e4aabc22c30e" style="position:absolute;inset:-5.56%;width:111.11%;height:111.11%;"/><img src="https://www.figma.com/api/mcp/asset/89935a5d-827e-4a77-b2f6-7ad77317e14a" style="position:absolute;inset:15%;width:70%;height:70%;"/><img src="https://www.figma.com/api/mcp/asset/ccbb6475-df6a-4dfa-a927-564ad0bea25c" style="position:absolute;inset:25%;width:50%;height:50%;"/></div><span style="font-size:11px;font-weight:700;color:#000;letter-spacing:0.6px;line-height:15px;text-transform:uppercase;white-space:nowrap;font-family:'DM Sans',sans-serif;">NVDA<span style="background:linear-gradient(-90deg,#40E0D0 0%,#55DAA2 6.6%,#7ED06D 17%,#AAC137 25%,#D5AB00 35%,#FF8C00 43%,#FF8C00 55%,#FF7526 77.5%,#FF5D3D 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">ON</span></span></div>
+<!-- USDT -->
+<div style="display:inline-flex;align-items:center;gap:8px;background:#f5f5f5;border-radius:8px;padding:6.5px 8px 6.5px 6px;cursor:pointer;transition:background .12s;" onmouseenter="this.style.background='#ebebeb'" onmouseleave="this.style.background='#f5f5f5'"><div style="position:relative;width:18px;height:18px;flex-shrink:0;overflow:hidden;"><img src="https://www.figma.com/api/mcp/asset/0f33a353-02b2-45e9-92f8-ea3f27c41a71" style="position:absolute;inset:0;width:100%;height:100%;"/><div style="position:absolute;inset:26.79% 21.41% 20.54% 21.41%;"><img src="https://www.figma.com/api/mcp/asset/2178f619-2481-4517-8cba-ebb434150497" style="position:absolute;inset:0;width:100%;height:100%;"/></div></div><span style="font-size:11px;font-weight:700;color:#000;letter-spacing:0.6px;line-height:15px;text-transform:uppercase;white-space:nowrap;font-family:'DM Sans',sans-serif;">USDT</span></div>
+</div>
+<div style="height:1px;background:#efefef;margin:8px 0;"></div>
+</div><div class="sec-def">Ondo stocks <span class="m">&nbsp;· by market cap</span></div><div class="sec-srch"></div><div class="row" data-t="aapl" data-n="apple apple"><div class="ico-stock"><div class="inner"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%2216%22%20fill%3D%22%231d1d1f%22%2F%3E%3Ctext%20x%3D%2216%22%20y%3D%2221%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2Csans-serif%22%20font-weight%3D%22700%22%20font-size%3D%2214%22%20fill%3D%22white%22%3EA%3C%2Ftext%3E%3C%2Fsvg%3E"/></div></div><div class="info"><div class="nr"><span class="tk">AAPL<span class="og">on</span></span><span class="fn">Apple</span></div></div><div class="price"><div class="pv">$211.45</div><div class="pc up">+1.23%</div></div></div><div class="row" data-t="msft" data-n="microsoft microsoft"><div class="ico-stock"><div class="inner"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%2216%22%20fill%3D%22%2300a4ef%22%2F%3E%3Ctext%20x%3D%2216%22%20y%3D%2221%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2Csans-serif%22%20font-weight%3D%22700%22%20font-size%3D%2214%22%20fill%3D%22white%22%3EM%3C%2Ftext%3E%3C%2Fsvg%3E"/></div></div><div class="info"><div class="nr"><span class="tk">MSFT<span class="og">on</span></span><span class="fn">Microsoft</span></div></div><div class="price"><div class="pv">$421.80</div><div class="pc up">+0.87%</div></div></div><div class="row" data-t="nvda" data-n="nvidia nvidia"><div class="ico-stock"><div class="inner ico-o" style="position:relative;"><div class="br"><img src="https://www.figma.com/api/mcp/asset/f4add56c-abb2-4906-b2db-3169fa3146fe"/></div><div class="tl"><img src="https://www.figma.com/api/mcp/asset/9f19b40f-1934-4b12-88d6-54b0d2c0f9e7"/></div><div class="lg"><img src="https://www.figma.com/api/mcp/asset/7d27c5fc-df59-4907-b546-56a4606bff70"/></div></div></div><div class="info"><div class="nr"><span class="tk">NVDA<span class="og">on</span></span><span class="fn">Nvidia</span></div></div><div class="price"><div class="pv">$876.02</div><div class="pc up">+0.59%</div></div></div><div class="row" data-t="amzn" data-n="amazon amazon"><div class="ico-stock"><div class="inner"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%2216%22%20fill%3D%22%23ff9900%22%2F%3E%3Ctext%20x%3D%2216%22%20y%3D%2221%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2Csans-serif%22%20font-weight%3D%22700%22%20font-size%3D%2214%22%20fill%3D%22white%22%3EA%3C%2Ftext%3E%3C%2Fsvg%3E"/></div></div><div class="info"><div class="nr"><span class="tk">AMZN<span class="og">on</span></span><span class="fn">Amazon</span></div></div><div class="price"><div class="pv">$198.32</div><div class="pc up">+1.45%</div></div></div><div class="row" data-t="googl" data-n="alphabet alphabet"><div class="ico-stock"><div class="inner"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%2216%22%20fill%3D%22%234285f4%22%2F%3E%3Ctext%20x%3D%2216%22%20y%3D%2221%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2Csans-serif%22%20font-weight%3D%22700%22%20font-size%3D%2214%22%20fill%3D%22white%22%3EG%3C%2Ftext%3E%3C%2Fsvg%3E"/></div></div><div class="info"><div class="nr"><span class="tk">GOOGL<span class="og">on</span></span><span class="fn">Alphabet</span></div></div><div class="price"><div class="pv">$172.50</div><div class="pc dn">-0.32%</div></div></div><div class="row" data-t="meta" data-n="meta meta"><div class="ico-stock"><div class="inner"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%2216%22%20fill%3D%22%230467df%22%2F%3E%3Ctext%20x%3D%2216%22%20y%3D%2221%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2Csans-serif%22%20font-weight%3D%22700%22%20font-size%3D%2214%22%20fill%3D%22white%22%3EM%3C%2Ftext%3E%3C%2Fsvg%3E"/></div></div><div class="info"><div class="nr"><span class="tk">META<span class="og">on</span></span><span class="fn">Meta</span></div></div><div class="price"><div class="pv">$534.10</div><div class="pc up">+2.10%</div></div></div><div class="row" data-t="tsla" data-n="tesla tesla"><div class="ico-stock"><div class="inner"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%2216%22%20fill%3D%22%23cc0000%22%2F%3E%3Ctext%20x%3D%2216%22%20y%3D%2221%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2Csans-serif%22%20font-weight%3D%22700%22%20font-size%3D%2214%22%20fill%3D%22white%22%3ET%3C%2Ftext%3E%3C%2Fsvg%3E"/></div></div><div class="info"><div class="nr"><span class="tk">TSLA<span class="og">on</span></span><span class="fn">Tesla</span></div></div><div class="price"><div class="pv">$248.76</div><div class="pc dn">-1.87%</div></div></div><div class="row" data-t="lly" data-n="eli lilly eli lilly"><div class="ico-stock"><div class="inner"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%2216%22%20fill%3D%22%23d52b1e%22%2F%3E%3Ctext%20x%3D%2216%22%20y%3D%2221%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2Csans-serif%22%20font-weight%3D%22700%22%20font-size%3D%2214%22%20fill%3D%22white%22%3EL%3C%2Ftext%3E%3C%2Fsvg%3E"/></div></div><div class="info"><div class="nr"><span class="tk">LLY<span class="og">on</span></span><span class="fn">Eli Lilly</span></div></div><div class="price"><div class="pv">$812.30</div><div class="pc up">+0.93%</div></div></div><div class="row" data-t="jpm" data-n="jpmorgan jpmorgan"><div class="ico-stock"><div class="inner"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%2216%22%20fill%3D%22%23003087%22%2F%3E%3Ctext%20x%3D%2216%22%20y%3D%2221%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2Csans-serif%22%20font-weight%3D%22700%22%20font-size%3D%2214%22%20fill%3D%22white%22%3EJ%3C%2Ftext%3E%3C%2Fsvg%3E"/></div></div><div class="info"><div class="nr"><span class="tk">JPM<span class="og">on</span></span><span class="fn">JPMorgan</span></div></div><div class="price"><div class="pv">$241.60</div><div class="pc up">+0.55%</div></div></div><div class="row" data-t="v" data-n="visa visa"><div class="ico-stock"><div class="inner"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%2216%22%20fill%3D%22%231a1f71%22%2F%3E%3Ctext%20x%3D%2216%22%20y%3D%2221%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2Csans-serif%22%20font-weight%3D%22700%22%20font-size%3D%2214%22%20fill%3D%22white%22%3EV%3C%2Ftext%3E%3C%2Fsvg%3E"/></div></div><div class="info"><div class="nr"><span class="tk">V<span class="og">on</span></span><span class="fn">Visa</span></div></div><div class="price"><div class="pv">$287.40</div><div class="pc up">+0.34%</div></div></div><div class="row" data-t="nflx" data-n="netflix netflix"><div class="ico-stock"><div class="inner ico-o" style="position:relative;"><div class="br"><img src="https://www.figma.com/api/mcp/asset/d32a8c6e-c772-4c66-9d2f-ca9e9fcc8c3e"/></div><div class="tl"><img src="https://www.figma.com/api/mcp/asset/696be6fd-9b0a-4077-bf10-6e69e5cd1c14"/></div><div class="lg"><img src="https://www.figma.com/api/mcp/asset/79ab70b3-427d-44aa-ac17-0c783c759e1b"/></div></div></div><div class="info"><div class="nr"><span class="tk">NFLX<span class="og">on</span></span><span class="fn">Netflix</span></div></div><div class="price"><div class="pv">$682.10</div><div class="pc up">+0.59%</div></div></div><div class="row" data-t="amd" data-n="amd amd"><div class="ico-stock"><div class="inner"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%2216%22%20fill%3D%22%23ed1c24%22%2F%3E%3Ctext%20x%3D%2216%22%20y%3D%2221%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2Csans-serif%22%20font-weight%3D%22700%22%20font-size%3D%2214%22%20fill%3D%22white%22%3EA%3C%2Ftext%3E%3C%2Fsvg%3E"/></div></div><div class="info"><div class="nr"><span class="tk">AMD<span class="og">on</span></span><span class="fn">AMD</span></div></div><div class="price"><div class="pv">$162.45</div><div class="pc dn">-0.72%</div></div></div><div class="row" data-t="dis" data-n="disney disney"><div class="ico-stock"><div class="inner"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%2216%22%20fill%3D%22%231e3a6e%22%2F%3E%3Ctext%20x%3D%2216%22%20y%3D%2221%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2Csans-serif%22%20font-weight%3D%22700%22%20font-size%3D%2214%22%20fill%3D%22white%22%3ED%3C%2Ftext%3E%3C%2Fsvg%3E"/></div></div><div class="info"><div class="nr"><span class="tk">DIS<span class="og">on</span></span><span class="fn">Disney</span></div></div><div class="price"><div class="pv">$98.75</div><div class="pc dn">-0.44%</div></div></div><div class="row" data-t="pypl" data-n="paypal paypal"><div class="ico-stock"><div class="inner"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%2216%22%20fill%3D%22%23002991%22%2F%3E%3Ctext%20x%3D%2216%22%20y%3D%2221%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2Csans-serif%22%20font-weight%3D%22700%22%20font-size%3D%2214%22%20fill%3D%22white%22%3EP%3C%2Ftext%3E%3C%2Fsvg%3E"/></div></div><div class="info"><div class="nr"><span class="tk">PYPL<span class="og">on</span></span><span class="fn">PayPal</span></div></div><div class="price"><div class="pv">$67.30</div><div class="pc up">+1.02%</div></div></div><div class="row" data-t="intc" data-n="intel intel"><div class="ico-stock"><div class="inner"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%2216%22%20fill%3D%22%230071c5%22%2F%3E%3Ctext%20x%3D%2216%22%20y%3D%2221%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2Csans-serif%22%20font-weight%3D%22700%22%20font-size%3D%2214%22%20fill%3D%22white%22%3EI%3C%2Ftext%3E%3C%2Fsvg%3E"/></div></div><div class="info"><div class="nr"><span class="tk">INTC<span class="og">on</span></span><span class="fn">Intel</span></div></div><div class="price"><div class="pv">$21.40</div><div class="pc dn">-1.23%</div></div></div><div class="row" data-t="coin" data-n="coinbase coinbase"><div class="ico-stock"><div class="inner"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%2216%22%20fill%3D%22%230052ff%22%2F%3E%3Ctext%20x%3D%2216%22%20y%3D%2221%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2Csans-serif%22%20font-weight%3D%22700%22%20font-size%3D%2214%22%20fill%3D%22white%22%3EC%3C%2Ftext%3E%3C%2Fsvg%3E"/></div></div><div class="info"><div class="nr"><span class="tk">COIN<span class="og">on</span></span><span class="fn">Coinbase</span></div></div><div class="price"><div class="pv">$198.50</div><div class="pc up">+3.21%</div></div></div><div class="row" data-t="hood" data-n="robinhood robinhood"><div class="ico-stock"><div class="inner"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%2216%22%20fill%3D%22%23ccff00%22%2F%3E%3Ctext%20x%3D%2216%22%20y%3D%2221%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2Csans-serif%22%20font-weight%3D%22700%22%20font-size%3D%2214%22%20fill%3D%22%231a1a1a%22%3EH%3C%2Ftext%3E%3C%2Fsvg%3E"/></div></div><div class="info"><div class="nr"><span class="tk">HOOD<span class="og">on</span></span><span class="fn">Robinhood</span></div></div><div class="price"><div class="pv">$42.96</div><div class="pc dn">-0.99%</div></div></div><div class="row" data-t="spot" data-n="spotify spotify"><div class="ico-stock"><div class="inner"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%2216%22%20fill%3D%22%231ed760%22%2F%3E%3Ctext%20x%3D%2216%22%20y%3D%2221%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2Csans-serif%22%20font-weight%3D%22700%22%20font-size%3D%2214%22%20fill%3D%22white%22%3ES%3C%2Ftext%3E%3C%2Fsvg%3E"/></div></div><div class="info"><div class="nr"><span class="tk">SPOT<span class="og">on</span></span><span class="fn">Spotify</span></div></div><div class="price"><div class="pv">$412.80</div><div class="pc up">+1.67%</div></div></div><div class="row" data-t="uber" data-n="uber uber"><div class="ico-stock"><div class="inner"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%2216%22%20fill%3D%22%23000%22%2F%3E%3Ctext%20x%3D%2216%22%20y%3D%2221%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2Csans-serif%22%20font-weight%3D%22700%22%20font-size%3D%2214%22%20fill%3D%22white%22%3EU%3C%2Ftext%3E%3C%2Fsvg%3E"/></div></div><div class="info"><div class="nr"><span class="tk">UBER<span class="og">on</span></span><span class="fn">Uber</span></div></div><div class="price"><div class="pv">$76.20</div><div class="pc up">+0.88%</div></div></div><div class="row" data-t="abnb" data-n="airbnb airbnb"><div class="ico-stock"><div class="inner"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%2216%22%20fill%3D%22%23ff5a5f%22%2F%3E%3Ctext%20x%3D%2216%22%20y%3D%2221%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2Csans-serif%22%20font-weight%3D%22700%22%20font-size%3D%2214%22%20fill%3D%22white%22%3EA%3C%2Ftext%3E%3C%2Fsvg%3E"/></div></div><div class="info"><div class="nr"><span class="tk">ABNB<span class="og">on</span></span><span class="fn">Airbnb</span></div></div><div class="price"><div class="pv">$138.90</div><div class="pc dn">-0.55%</div></div></div><div class="row" data-t="sq" data-n="block block"><div class="ico-stock"><div class="inner"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%2216%22%20fill%3D%22%233e4348%22%2F%3E%3Ctext%20x%3D%2216%22%20y%3D%2221%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2Csans-serif%22%20font-weight%3D%22700%22%20font-size%3D%2214%22%20fill%3D%22white%22%3ES%3C%2Ftext%3E%3C%2Fsvg%3E"/></div></div><div class="info"><div class="nr"><span class="tk">SQ<span class="og">on</span></span><span class="fn">Block</span></div></div><div class="price"><div class="pv">$58.40</div><div class="pc up">+1.34%</div></div></div><div class="row" data-t="shop" data-n="shopify shopify"><div class="ico-stock"><div class="inner"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%2216%22%20fill%3D%22%237ab55c%22%2F%3E%3Ctext%20x%3D%2216%22%20y%3D%2221%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2Csans-serif%22%20font-weight%3D%22700%22%20font-size%3D%2214%22%20fill%3D%22white%22%3ES%3C%2Ftext%3E%3C%2Fsvg%3E"/></div></div><div class="info"><div class="nr"><span class="tk">SHOP<span class="og">on</span></span><span class="fn">Shopify</span></div></div><div class="price"><div class="pv">$88.60</div><div class="pc up">+2.15%</div></div></div><div class="sm"><div class="sm-line"></div><span>Show more</span><svg viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="#1a1a1a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="sm-line"></div></div><div class="div"></div><div class="sec-def">Crypto <span class="m">&nbsp;· by market cap</span></div><div class="sec-srch"></div><div class="row" data-t="btc" data-n="bitcoin "><div class="ico"><img src="https://cryptologos.cc/logos/bitcoin-btc-logo.png" style="width:100%;height:100%;object-fit:contain;display:block;"/></div><div class="info"><div class="nr"><span class="tk">BTC</span><span class="fn">Bitcoin</span></div></div><div class="price"><div class="pv">$103,245</div><div class="pc up">+2.34%</div></div></div><div class="row" data-t="eth" data-n="ethereum "><div class="ico"><img src="https://cryptologos.cc/logos/ethereum-eth-logo.png" style="width:100%;height:100%;object-fit:contain;display:block;"/></div><div class="info"><div class="nr"><span class="tk">ETH</span><span class="fn">Ethereum</span></div></div><div class="price"><div class="pv">$2,841</div><div class="pc up">+1.12%</div></div></div><div class="row" data-t="wbtc" data-n="wrapped bitcoin "><div class="ico"><img src="https://cryptologos.cc/logos/wrapped-bitcoin-wbtc-logo.png" style="width:100%;height:100%;object-fit:contain;display:block;"/></div><div class="info"><div class="nr"><span class="tk">WBTC</span><span class="fn">Wrapped Bitcoin</span></div></div><div class="price"><div class="pv">$103,100</div><div class="pc up">+2.30%</div></div></div><div class="row" data-t="sol" data-n="solana "><div class="ico"><img src="https://cryptologos.cc/logos/solana-sol-logo.png" style="width:100%;height:100%;object-fit:contain;display:block;"/></div><div class="info"><div class="nr"><span class="tk">SOL</span><span class="fn">Solana</span></div></div><div class="price"><div class="pv">$178.40</div><div class="pc up">+3.45%</div></div></div><div class="row" data-t="bnb" data-n="bnb "><div class="ico"><img src="https://cryptologos.cc/logos/bnb-bnb-logo.png" style="width:100%;height:100%;object-fit:contain;display:block;"/></div><div class="info"><div class="nr"><span class="tk">BNB</span><span class="fn">BNB</span></div></div><div class="price"><div class="pv">$648.20</div><div class="pc up">+0.87%</div></div></div><div class="row" data-t="usdc" data-n="usd coin "><div class="ico"><img src="https://cryptologos.cc/logos/usd-coin-usdc-logo.png" style="width:100%;height:100%;object-fit:contain;display:block;"/></div><div class="info"><div class="nr"><span class="tk">USDC</span><span class="fn">USD Coin</span></div></div><div class="price"><div class="pv">$1.00</div><div class="pc up">0.00%</div></div></div><div class="row" data-t="xrp" data-n="xrp "><div class="ico"><img src="https://cryptologos.cc/logos/xrp-xrp-logo.png" style="width:100%;height:100%;object-fit:contain;display:block;"/></div><div class="info"><div class="nr"><span class="tk">XRP</span><span class="fn">XRP</span></div></div><div class="price"><div class="pv">$2.34</div><div class="pc up">+1.56%</div></div></div><div class="row" data-t="usdt" data-n="tether usd "><div class="ico"><img src="https://cryptologos.cc/logos/tether-usdt-logo.png" style="width:100%;height:100%;object-fit:contain;display:block;"/></div><div class="info"><div class="nr"><span class="tk">USDT</span><span class="fn">Tether USD</span></div></div><div class="price"><div class="pv">$1.00</div><div class="pc up">0.00%</div></div></div><div class="row" data-t="doge" data-n="dogecoin "><div class="ico"><img src="https://cryptologos.cc/logos/dogecoin-doge-logo.png" style="width:100%;height:100%;object-fit:contain;display:block;"/></div><div class="info"><div class="nr"><span class="tk">DOGE</span><span class="fn">Dogecoin</span></div></div><div class="price"><div class="pv">$0.21</div><div class="pc up">+4.21%</div></div></div><div class="row" data-t="avax" data-n="avalanche "><div class="ico"><img src="https://cryptologos.cc/logos/avalanche-avax-logo.png" style="width:100%;height:100%;object-fit:contain;display:block;"/></div><div class="info"><div class="nr"><span class="tk">AVAX</span><span class="fn">Avalanche</span></div></div><div class="price"><div class="pv">$38.70</div><div class="pc dn">-1.23%</div></div></div><div class="row" data-t="link" data-n="chainlink "><div class="ico"><img src="https://cryptologos.cc/logos/chainlink-link-logo.png" style="width:100%;height:100%;object-fit:contain;display:block;"/></div><div class="info"><div class="nr"><span class="tk">LINK</span><span class="fn">Chainlink</span></div></div><div class="price"><div class="pv">$18.40</div><div class="pc up">+2.10%</div></div></div><div class="row" data-t="uni" data-n="uniswap "><div class="ico"><img src="https://cryptologos.cc/logos/uniswap-uni-logo.png" style="width:100%;height:100%;object-fit:contain;display:block;"/></div><div class="info"><div class="nr"><span class="tk">UNI</span><span class="fn">Uniswap</span></div></div><div class="price"><div class="pv">$8.75</div><div class="pc up">+1.88%</div></div></div><div class="row" data-t="aave" data-n="aave "><div class="ico"><img src="https://cryptologos.cc/logos/aave-aave-logo.png" style="width:100%;height:100%;object-fit:contain;display:block;"/></div><div class="info"><div class="nr"><span class="tk">AAVE</span><span class="fn">Aave</span></div></div><div class="price"><div class="pv">$192.30</div><div class="pc up">+3.40%</div></div></div><div class="sm"><div class="sm-line"></div><span>Show more</span><svg viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="#1a1a1a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="sm-line"></div></div><div class="div"></div><div class="sec-def">Perpetuals <span class="m">&nbsp;· by market cap</span></div><div class="sec-srch"></div><div class="row" data-t="nvda" data-n="nvidia "><div class="ico"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%2216%22%20fill%3D%22%2376b900%22%2F%3E%3Ctext%20x%3D%2216%22%20y%3D%2221%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2Csans-serif%22%20font-weight%3D%22700%22%20font-size%3D%2214%22%20fill%3D%22white%22%3EN%3C%2Ftext%3E%3C%2Fsvg%3E" style="width:100%;height:100%;object-fit:contain;display:block;"/></div><div class="info"><div class="nr"><span class="tk">NVDA</span><span class="fn">Nvidia</span></div></div><div class="price"><div class="pv">$876.02</div><div class="pc up">+0.59%</div></div></div><div class="row" data-t="hood" data-n="robinhood "><div class="ico"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%2216%22%20fill%3D%22%23ccff00%22%2F%3E%3Ctext%20x%3D%2216%22%20y%3D%2221%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2Csans-serif%22%20font-weight%3D%22700%22%20font-size%3D%2214%22%20fill%3D%22%231a1a1a%22%3EH%3C%2Ftext%3E%3C%2Fsvg%3E" style="width:100%;height:100%;object-fit:contain;display:block;"/></div><div class="info"><div class="nr"><span class="tk">HOOD</span><span class="fn">Robinhood</span></div></div><div class="price"><div class="pv">$42.96</div><div class="pc dn">-0.99%</div></div></div><div class="row" data-t="tsla" data-n="tesla "><div class="ico"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%2216%22%20fill%3D%22%23cc0000%22%2F%3E%3Ctext%20x%3D%2216%22%20y%3D%2221%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2Csans-serif%22%20font-weight%3D%22700%22%20font-size%3D%2214%22%20fill%3D%22white%22%3ET%3C%2Ftext%3E%3C%2Fsvg%3E" style="width:100%;height:100%;object-fit:contain;display:block;"/></div><div class="info"><div class="nr"><span class="tk">TSLA</span><span class="fn">Tesla</span></div></div><div class="price"><div class="pv">$248.76</div><div class="pc dn">-1.87%</div></div></div><div class="row" data-t="aapl" data-n="apple "><div class="ico"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%2216%22%20fill%3D%22%231d1d1f%22%2F%3E%3Ctext%20x%3D%2216%22%20y%3D%2221%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2Csans-serif%22%20font-weight%3D%22700%22%20font-size%3D%2214%22%20fill%3D%22white%22%3EA%3C%2Ftext%3E%3C%2Fsvg%3E" style="width:100%;height:100%;object-fit:contain;display:block;"/></div><div class="info"><div class="nr"><span class="tk">AAPL</span><span class="fn">Apple</span></div></div><div class="price"><div class="pv">$211.45</div><div class="pc up">+1.23%</div></div></div><div class="row" data-t="msft" data-n="microsoft "><div class="ico"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%2216%22%20fill%3D%22%2300a4ef%22%2F%3E%3Ctext%20x%3D%2216%22%20y%3D%2221%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2Csans-serif%22%20font-weight%3D%22700%22%20font-size%3D%2214%22%20fill%3D%22white%22%3EM%3C%2Ftext%3E%3C%2Fsvg%3E" style="width:100%;height:100%;object-fit:contain;display:block;"/></div><div class="info"><div class="nr"><span class="tk">MSFT</span><span class="fn">Microsoft</span></div></div><div class="price"><div class="pv">$421.80</div><div class="pc up">+0.87%</div></div></div><div class="row" data-t="btc" data-n="bitcoin "><div class="ico"><img src="https://cryptologos.cc/logos/bitcoin-btc-logo.png" style="width:100%;height:100%;object-fit:contain;display:block;"/></div><div class="info"><div class="nr"><span class="tk">BTC</span><span class="fn">Bitcoin</span></div></div><div class="price"><div class="pv">$103,245</div><div class="pc up">+2.34%</div></div></div><div class="row" data-t="eth" data-n="ethereum "><div class="ico"><img src="https://cryptologos.cc/logos/ethereum-eth-logo.png" style="width:100%;height:100%;object-fit:contain;display:block;"/></div><div class="info"><div class="nr"><span class="tk">ETH</span><span class="fn">Ethereum</span></div></div><div class="price"><div class="pv">$2,841</div><div class="pc up">+1.12%</div></div></div><div class="row" data-t="nflx" data-n="netflix "><div class="ico"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%2216%22%20fill%3D%22%23e50914%22%2F%3E%3Ctext%20x%3D%2216%22%20y%3D%2221%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2Csans-serif%22%20font-weight%3D%22700%22%20font-size%3D%2214%22%20fill%3D%22white%22%3EN%3C%2Ftext%3E%3C%2Fsvg%3E" style="width:100%;height:100%;object-fit:contain;display:block;"/></div><div class="info"><div class="nr"><span class="tk">NFLX</span><span class="fn">Netflix</span></div></div><div class="price"><div class="pv">$682.10</div><div class="pc up">+0.59%</div></div></div><div class="row" data-t="amzn" data-n="amazon "><div class="ico"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%2216%22%20fill%3D%22%23ff9900%22%2F%3E%3Ctext%20x%3D%2216%22%20y%3D%2221%22%20text-anchor%3D%22middle%22%20font-family%3D%22DM%20Sans%2Csans-serif%22%20font-weight%3D%22700%22%20font-size%3D%2214%22%20fill%3D%22white%22%3EA%3C%2Ftext%3E%3C%2Fsvg%3E" style="width:100%;height:100%;object-fit:contain;display:block;"/></div><div class="info"><div class="nr"><span class="tk">AMZN</span><span class="fn">Amazon</span></div></div><div class="price"><div class="pv">$198.32</div><div class="pc up">+1.45%</div></div></div><div class="sm"><div class="sm-line"></div><span>Show more</span><svg viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="#1a1a1a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="sm-line"></div></div></div>
+<div id="__toggle-panel" style="position:absolute;bottom:32px;left:32px;background:#FFF3B0;border:1px solid #F0D950;border-radius:20px;padding:20px 24px;display:flex;flex-direction:column;gap:16px;box-shadow:0 4px 20px rgba(0,0,0,0.1);z-index:20;font-family:'DM Sans',sans-serif;min-width:220px;">
+<span style="font-size:11px;font-weight:700;color:#9a8500;letter-spacing:0.08em;text-transform:uppercase;">Prototype settings</span>
+<div style="display:flex;align-items:center;justify-content:space-between;gap:24px;">
+<div style="display:flex;flex-direction:column;gap:3px;">
+<span style="font-size:15px;font-weight:500;color:#1a1a1a;">Opened recently</span>
+<span style="font-size:12px;font-weight:400;color:#7a6e00;line-height:1.4;max-width:160px;">Show recently viewed assets at the top of the search dropdown.</span>
+</div>
+<div id="__toggle-switch" style="width:48px;height:28px;border-radius:999px;background:#1a1a1a;cursor:pointer;position:relative;transition:background .2s;flex-shrink:0;">
+<div style="position:absolute;top:4px;right:4px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .2s;"></div>
+</div>
+</div>
+<div style="height:1px;background:rgba(0,0,0,0.08);margin:0 -4px;"></div>
+<div style="display:flex;align-items:center;justify-content:space-between;gap:24px;">
+<div style="display:flex;flex-direction:column;gap:3px;">
+<span style="font-size:15px;font-weight:500;color:#1a1a1a;">Opened recently amount</span>
+<span style="font-size:12px;font-weight:400;color:#7a6e00;line-height:1.4;max-width:160px;">Number of items to display in the opened recently section.</span>
+</div>
+<div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+<button id="__recent-dec" style="width:28px;height:28px;border-radius:50%;border:1.5px solid rgba(0,0,0,0.15);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;line-height:1;color:#1a1a1a;transition:background .12s;" onmouseenter="this.style.background='#f0f0f0'" onmouseleave="this.style.background='#fff'">−</button>
+<span id="__recent-count" style="font-size:15px;font-weight:600;color:#1a1a1a;min-width:14px;text-align:center;">6</span>
+<button id="__recent-inc" style="width:28px;height:28px;border-radius:50%;border:1.5px solid rgba(0,0,0,0.15);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;line-height:1;color:#1a1a1a;transition:background .12s;" onmouseenter="this.style.background='#f0f0f0'" onmouseleave="this.style.background='#fff'">+</button>
+</div>
+</div>
+</div>
+<script>
+(function(){
+const DD=document.getElementById('DD'),SC=document.getElementById('SC'),SB=document.getElementById('SB'),IN=document.getElementById('IN'),F=document.getElementById('F');
+
+function positionDD(){const slot=document.getElementById('SB-slot');const r=slot.getBoundingClientRect();const compact=window.innerWidth<1230;SB.style.left=r.left+'px';SB.style.top=r.top+'px';if(compact){const ddW=420;const left=Math.min(r.left,window.innerWidth-ddW-8);DD.style.left=Math.max(8,left)+'px';}else{DD.style.left=r.left+'px';}DD.style.top=(r.bottom+8)+'px';}
+positionDD();window.addEventListener('resize',positionDD);
+
+const divs=Array.from(document.querySelectorAll('.div'));
+function open(){const slot=document.getElementById('SB-slot');const r=slot.getBoundingClientRect();const compact=window.innerWidth<1230;if(compact){const ddW=420;const left=Math.min(r.left,window.innerWidth-ddW-8);DD.style.left=Math.max(8,left)+'px';}else{DD.style.left=r.left+'px';}DD.style.top=(r.bottom+8)+'px';DD.style.display='block';DD.style.opacity='1';DD.style.pointerEvents='all';DD.style.transform='translateY(0)';SC.classList.add('on');SB.style.background='#fff';SB.style.borderColor='rgba(0,0,0,0.12)';SB.style.boxShadow='0 1px 6px rgba(0,0,0,0.1)';divs.forEach(d=>d.style.display='');}
+function close(){DD.style.display='none';SC.classList.remove('on');SB.style.background='#f5f5f5';SB.style.borderColor='transparent';SB.style.boxShadow='none';IN.value='';filter('');}
+
+SB.onclick=function(e){e.stopPropagation();open();IN.focus();};
+SC.onclick=function(e){e.stopPropagation();close();};
+document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
+
+const secs=[[],[],[]];let cc=-1;
+DD.querySelectorAll('.row,.sec-def').forEach(el=>{if(el.classList.contains('sec-def'))cc++;else if(el.classList.contains('row')&&cc>=0&&cc<3)secs[cc].push(el);});
+secs.forEach(rows=>rows.forEach((r,i)=>{if(i>=2)r.dataset.ov='1';}));
+DD.querySelectorAll('.row[data-ov]').forEach(r=>r.classList.add('h'));
+
+const ssEls=Array.from(DD.querySelectorAll('.sec-srch'));
+const smArr=Array.from(DD.querySelectorAll('.sm'));
+const snms=['Ondo stocks','Crypto','Perpetuals'];
+const exp=[false,false,false];
+
+function setSmBtn(btn,e){btn.innerHTML='<div class="sm-line"></div><span>'+(e?'Show less':'Show more')+'</span><svg viewBox="0 0 14 14" fill="none" style="transition:transform .2s;transform:'+(e?'rotate(180deg)':'none')+'"><path d="M3 5l4 4 4-4" stroke="#1a1a1a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="sm-line"></div>';}
+smArr.forEach((btn,i)=>{
+setSmBtn(btn,false);
+btn.addEventListener('click',function(e){
+e.preventDefault();e.stopPropagation();
+exp[i]=!exp[i];setSmBtn(btn,exp[i]);
+const lq=IN.value.trim().toLowerCase();
+const matches=secs[i].filter(r=>r.dataset.t.indexOf(lq)>-1||r.dataset.n.indexOf(lq)>-1);
+if(exp[i]){matches.forEach(r=>{r.classList.remove('h');delete r.dataset.sh;});}
+else{matches.forEach((r,idx)=>{if(idx<3){r.classList.remove('h');delete r.dataset.sh;}else{r.classList.add('h');r.dataset.sh='1';}});}
+});
+});
+
+function filter(q){
+const isSr=q.length>0;
+DD.className='dd on'+(isSr?' vs':'');
+const lq=q.toLowerCase();exp.fill(false);
+secs.forEach((rows,i)=>{
+rows.forEach(r=>{delete r.dataset.sh;});
+if(!isSr){rows.forEach(r=>r.classList.toggle('h',!!r.dataset.ov));if(smArr[i]){smArr[i].style.display='';setSmBtn(smArr[i],false);}return;}
+const ms=rows.filter(r=>r.dataset.t.indexOf(lq)>-1||r.dataset.n.indexOf(lq)>-1);
+let sh=0;rows.forEach(r=>{const m=ms.includes(r);if(!m){r.classList.add('h');return;}sh++;if(sh<=3)r.classList.remove('h');else{r.classList.add('h');r.dataset.sh='1';}});
+const tot=ms.length,nr=tot===0;
+if(ssEls[i]){ssEls[i].style.display=nr?'none':'';ssEls[i].innerHTML=snms[i]+' <span class="cnt">&nbsp;· '+tot+' result'+(tot!==1?'s':'')+'</span>';}
+if(smArr[i]){smArr[i].style.display=tot>3?'flex':'none';setSmBtn(smArr[i],false);}
+});
+}
+
+IN.addEventListener('input',function(){filter(this.value.trim());});
+
+let recentOn=true;
+const sw=document.getElementById('__toggle-switch');
+const knob=sw.querySelector('div');
+const recent=document.getElementById('recent-section');
+window.__toggleRecent=function(){
+recentOn=!recentOn;
+if(recentOn){sw.style.background='#1a1a1a';knob.style.transform='translateX(0)';if(recent)recent.style.display='';}
+else{sw.style.background='#ccc';knob.style.transform='translateX(-20px)';if(recent)recent.style.display='none';}
+};
+sw.onclick=window.__toggleRecent;
+
+let recentAmt=6;
+const recentChips=Array.from(document.querySelectorAll('#recent-section > div:nth-child(2) > div'));
+function applyRecentAmt(){
+recentChips.forEach((chip,i)=>{chip.style.display=i<recentAmt?'inline-flex':'none';});
+}
+applyRecentAmt();
+const decBtn=document.getElementById('__recent-dec');
+const incBtn=document.getElementById('__recent-inc');
+const cntEl=document.getElementById('__recent-count');
+decBtn.onclick=function(){if(recentAmt>1){recentAmt--;cntEl.textContent=recentAmt;applyRecentAmt();}};
+incBtn.onclick=function(){if(recentAmt<6){recentAmt++;cntEl.textContent=recentAmt;applyRecentAmt();}};
+})();
+</script>
+</body>
+</html>
