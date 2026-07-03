@@ -1,0 +1,1546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MEW Portfolio – Multiple Addresses</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #f5f5f5;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* ─── Navbar ─── */
+    .navbar {
+      background: #ffffff;
+      border-bottom: 1px solid #e6e6e6;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px 0 20px;
+      height: 76px;
+      width: 100%;
+      position: fixed;
+      top: 0;
+      left: 0;
+    }
+
+    .navbar-left {
+      display: flex;
+      align-items: center;
+      gap: 48px;
+      flex-shrink: 0;
+    }
+
+    .navbar-logo {
+      width: 140px;
+      height: 48px;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .navbar-logo img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      pointer-events: none;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 8px;
+      border-radius: 16px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .nav-link.active {
+      background: #e6e6e6;
+    }
+
+    .nav-link-inner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 4px;
+    }
+
+    .nav-link-label {
+      font-weight: 600;
+      font-size: 14px;
+      line-height: 20px;
+      letter-spacing: -0.28px;
+      color: #000000;
+      white-space: nowrap;
+    }
+
+    /* ─── Icon frames ─── */
+    .icon-frame-12 { width: 12px; height: 12px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+    .icon-frame-14 { width: 14px; height: 14px; flex-shrink: 0; position: relative; }
+    .icon-frame-16 { width: 16px; height: 16px; flex-shrink: 0; position: relative; }
+    .icon-frame-20 { width: 20px; height: 20px; flex-shrink: 0; position: relative; }
+    .icon-frame-24 { width: 24px; height: 24px; flex-shrink: 0; position: relative; }
+    .icon-frame-28 { width: 28px; height: 28px; flex-shrink: 0; position: relative; }
+
+    .icon-img {
+      position: absolute;
+      display: block;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* ─── Navbar right ─── */
+    .navbar-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+
+    .searchbar {
+      background: #e6e6e6;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      height: 40px;
+      padding: 0 10px;
+      border-radius: 24px;
+      width: 240px;
+      flex-shrink: 0;
+    }
+
+    .searchbar-placeholder {
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 20px;
+      color: #767676;
+      white-space: nowrap;
+    }
+
+    /* ─── Wallet pill ─── */
+    .wallet-pill {
+      background: #ffffff;
+      border: 1px solid #e6e6e6;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      height: 40px;
+      width: 200px;
+      padding: 0 10px 0 8px;
+      border-radius: 20px;
+      cursor: pointer;
+      position: fixed;
+      z-index: 250;
+    }
+
+    .wallet-pill.is-connected {
+      border: 1px solid #e6e6e6;
+    }
+
+    .wallet-avatar-wrap {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .wallet-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 99px;
+      overflow: hidden;
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+
+    .wallet-avatar img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .networks-badge {
+      position: absolute;
+      bottom: -4px;
+      right: -4px;
+      width: 16px;
+      height: 16px;
+    }
+
+    .networks-badge img { display: block; width: 100%; height: 100%; }
+
+    .pill-text-col {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      flex: 1;
+      min-width: 0;
+    }
+
+    /* watchonly state row */
+    .pill-status-row {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-bottom: -3px;
+    }
+
+    .pill-status-label {
+      font-weight: 400;
+      font-size: 10px;
+      line-height: 16px;
+      color: #575757;
+      white-space: nowrap;
+      font-variation-settings: 'opsz' 14;
+    }
+
+    /* connected dot */
+    .connected-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 99px;
+      background: #22c55e;
+      flex-shrink: 0;
+    }
+
+    .pill-name-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 4px;
+      min-width: 0;
+      width: 100%;
+    }
+
+    .pill-name {
+      font-weight: 600;
+      font-size: 14px;
+      line-height: 20px;
+      letter-spacing: -0.28px;
+      color: #000000;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      min-width: 0;
+    }
+
+    .pill-address-short {
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 20px;
+      color: #575757;
+    }
+
+    .pill-chevron {
+      flex-shrink: 0;
+      transition: transform 0.15s ease;
+    }
+
+    .wallet-pill.is-open .pill-chevron {
+      transform: rotate(180deg);
+    }
+
+    /* ─── Actions ─── */
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .icon-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 24px;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    /* ─── Scrim ─── */
+    .scrim {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: 150;
+    }
+
+    .scrim.is-visible { display: block; }
+
+    /* ─── Modal ─── */
+    .modal {
+      display: none;
+      position: fixed;
+      width: 384px;
+      background: #ffffff;
+      border-radius: 32px;
+      box-shadow: 0px 3px 12px -6px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      z-index: 300;
+      flex-direction: column;
+    }
+
+    .modal.is-visible { display: flex; }
+
+    /* ─── Modal: detail card ─── */
+    .modal-card-section {
+      padding: 16px;
+      flex-shrink: 0;
+    }
+
+    .modal-card-inner {
+      background: #f5f5f5;
+      border-radius: 20px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Header band — color is set per-address via JS */
+    .card-header {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 172px;
+      padding: 16px;
+      border-radius: 20px;
+    }
+
+    .card-top-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .card-info {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .card-balance {
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 22px;
+      color: #000;
+    }
+
+    .card-name-row {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+      width: 100%;
+    }
+
+    .card-name {
+      font-weight: 700;
+      font-size: 24px;
+      line-height: 26px;
+      letter-spacing: -0.48px;
+      color: #000;
+      white-space: nowrap;
+    }
+
+    .card-address-group {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .card-address-short {
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 22px;
+      color: #000;
+    }
+
+    .card-copy-btn {
+      display: flex;
+      align-items: flex-start;
+      padding-top: 2px;
+      cursor: pointer;
+    }
+
+    .card-source {
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 20px;
+      color: rgba(0, 0, 0, 0.5);
+    }
+
+    .card-more-btn {
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .card-bottom-row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .card-status-row {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .card-status-label {
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 22px;
+      color: #000;
+    }
+
+    /* action button in card */
+    .card-btn {
+      background: #ffffff;
+      height: 40px;
+      padding: 0 12px;
+      border-radius: 24px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card-btn.is-connect {
+      background: #005ae5;
+    }
+
+    .card-btn span {
+      font-weight: 600;
+      font-size: 14px;
+      line-height: 20px;
+      letter-spacing: -0.28px;
+      color: #000;
+      padding: 0 4px;
+    }
+
+    .card-btn.is-connect span {
+      color: #ffffff;
+    }
+
+    /* network row */
+    .card-network-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      height: 52px;
+      padding: 0 16px 0 12px;
+    }
+
+    .card-network-label {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-width: 0;
+    }
+
+    .card-network-name {
+      font-weight: 600;
+      font-size: 14px;
+      line-height: 20px;
+      letter-spacing: -0.28px;
+      color: #000;
+    }
+
+    /* ─── Modal: list section ─── */
+    .modal-list-section {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      min-height: 0;
+      padding: 0 0 16px;
+      position: relative;
+    }
+
+    .modal-list-header {
+      display: flex;
+      align-items: center;
+      padding: 8px 16px 8px;
+    }
+
+    .modal-list-header span {
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 20px;
+      color: #575757;
+    }
+
+    .modal-list-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 8px;
+      position: relative;
+    }
+
+    .modal-list-scroll::-webkit-scrollbar { display: none; }
+
+    /* fade at bottom — anchored to section, not scroll container */
+    .modal-list-fade {
+      position: absolute;
+      bottom: 16px;
+      left: 0;
+      right: 0;
+      height: 32px;
+      background: linear-gradient(to bottom, rgba(245,245,245,0), #f5f5f5);
+      pointer-events: none;
+    }
+
+    /* ─── Address row ─── */
+    .address-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      border-radius: 16px;
+      cursor: pointer;
+    }
+
+    .address-row.is-selected {
+      background: #f5f5f5;
+    }
+
+    .address-avatar {
+      width: 40px;
+      height: 40px;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .address-avatar img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 99px;
+    }
+
+    /* selected ring */
+    .address-avatar-ring {
+      position: absolute;
+      inset: -3px;
+      border-radius: 99px;
+      border: 2px solid #000;
+      pointer-events: none;
+    }
+
+    .address-avatar-ring.is-connected {
+      border-color: #05c0a5;
+    }
+
+    .address-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      min-width: 0;
+    }
+
+    .address-name-row {
+      display: flex;
+      align-items: center;
+    }
+
+    .address-name {
+      font-weight: 600;
+      font-size: 14px;
+      line-height: 20px;
+      letter-spacing: -0.28px;
+      color: #000;
+      white-space: nowrap;
+    }
+
+    .address-name.is-watchonly { color: #000; }
+    .address-name.is-inactive { color: #575757; }
+
+    /* status badge next to name */
+    .address-status-badge {
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .address-status-badge img {
+      display: block;
+      width: 14px;
+      height: 14px;
+    }
+
+    .address-connected-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 99px;
+      background: #05c0a5;
+      flex-shrink: 0;
+    }
+
+    .address-sub {
+      font-weight: 400;
+      font-size: 12px;
+      line-height: 18px;
+      color: #575757;
+      white-space: nowrap;
+    }
+
+    .address-sub.is-selected { color: #000; }
+
+    /* check badge (selected) */
+    .address-check {
+      width: 16px;
+      height: 16px;
+      border-radius: 99px;
+      background: #000;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .address-check img { display: block; width: 12px; height: 12px; }
+
+    .address-check.is-hidden { visibility: hidden; }
+
+    .address-balance {
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 20px;
+      color: #575757;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .address-balance.is-selected { color: #000; }
+
+    .address-more-btn {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      position: relative;
+      cursor: pointer;
+    }
+
+    /* ─── Modal footer ─── */
+    .modal-footer {
+      padding: 0 16px 16px;
+      flex-shrink: 0;
+    }
+
+    .add-wallet-btn {
+      background: #e6e6e6;
+      width: 100%;
+      height: 48px;
+      border-radius: 24px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .add-wallet-btn span {
+      font-weight: 600;
+      font-size: 16px;
+      line-height: 22px;
+      letter-spacing: -0.32px;
+      color: #000;
+      padding: 0 8px;
+    }
+
+    /* ─── Network dropdown ─── */
+    .card-network-row {
+      cursor: pointer;
+      position: relative;
+    }
+
+    .card-network-row .network-chevron {
+      transition: transform 0.2s ease;
+    }
+
+    .card-network-row.is-open .network-chevron {
+      transform: rotate(180deg);
+    }
+
+    .network-dropdown {
+      display: none;
+      position: fixed;
+      background: #ffffff;
+      border: 1px solid #e6e6e6;
+      border-radius: 20px;
+      box-shadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.12);
+      z-index: 400;
+      overflow: hidden;
+    }
+
+    .network-dropdown.is-visible {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .network-dropdown-header {
+      padding: 16px;
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 20px;
+      color: #575757;
+      flex-shrink: 0;
+    }
+
+    .network-dropdown-scroll {
+      overflow-y: auto;
+      max-height: 240px;
+      padding: 4px;
+    }
+
+    .network-dropdown-scroll::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .network-dropdown-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .network-dropdown-scroll::-webkit-scrollbar-thumb {
+      background: #e6e6e6;
+      border-radius: 99px;
+    }
+
+    .network-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      height: 56px;
+      padding: 0 16px;
+      border-radius: 16px;
+      cursor: pointer;
+    }
+
+    .network-option:hover {
+      background: #f5f5f5;
+    }
+
+    .network-option.is-selected {
+      background: transparent;
+    }
+
+    .network-option-icon {
+      width: 28px;
+      height: 28px;
+      flex-shrink: 0;
+      border-radius: 99px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .network-option-icon img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .network-option-name {
+      flex: 1;
+      font-weight: 600;
+      font-size: 14px;
+      line-height: 20px;
+      letter-spacing: -0.28px;
+      color: #000;
+    }
+
+    .network-option-check {
+      width: 16px;
+      height: 16px;
+      border-radius: 99px;
+      background: #000;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .network-option-check img {
+      display: block;
+      width: 12px;
+      height: 12px;
+    }
+
+    /* ─── Modal slide container ─── */
+    .modal {
+      overflow: hidden !important;
+      transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .modal-slides {
+      display: flex;
+      width: 200%;
+      flex: 1;
+      min-height: 0;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .modal-slides.show-connect {
+      transform: translateX(-50%);
+    }
+
+    .modal-slide {
+      width: 50%;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ─── Connect address screen ─── */
+    .connect-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      padding: 48px 24px 24px;
+      flex: 1;
+    }
+
+    .connect-back-btn {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      width: 32px;
+      height: 32px;
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 1;
+    }
+
+    .connect-provider-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 32px;
+      background: #f5f5f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .connect-provider-icon img {
+      width: 65%;
+      height: 65%;
+      object-fit: contain;
+      display: block;
+    }
+
+    .connect-text-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .connect-title {
+      font-weight: 700;
+      font-size: 20px;
+      line-height: 22px;
+      letter-spacing: -0.4px;
+      color: #000;
+    }
+
+    .connect-subtitle {
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 20px;
+      color: #575757;
+    }
+
+    .connect-address-box {
+      background: #f5f5f5;
+      border-radius: 24px;
+      padding: 24px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .connect-address-full {
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 22px;
+      color: #000;
+      text-align: center;
+      word-break: break-all;
+    }
+
+    .connect-open-btn {
+      background: #005ae5;
+      width: 100%;
+      height: 48px;
+      border-radius: 24px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .connect-open-btn span {
+      font-weight: 600;
+      font-size: 16px;
+      line-height: 22px;
+      letter-spacing: -0.32px;
+      color: #ffffff;
+      padding: 0 8px 0 16px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Wallet pill — lives outside navbar to escape its stacking context -->
+  <div class="wallet-pill" id="walletPill">
+
+    <div class="wallet-avatar-wrap">
+      <div class="wallet-avatar">
+        <img src="assets/wallet-avatar.png" alt="" />
+      </div>
+      <div class="networks-badge">
+        <img id="pillNetworkBadgeImg" src="assets/eth-network.svg" alt="" style="border-radius:99px;object-fit:cover;" />
+      </div>
+    </div>
+
+    <div class="pill-text-col">
+      <div class="pill-status-row" id="pillStatusRow"></div>
+      <div class="pill-name-row">
+        <span class="pill-name" id="pillName">Main wallet</span>
+        <span class="pill-address-short" id="pillAddr">4723</span>
+      </div>
+    </div>
+
+    <div class="icon-frame-20 pill-chevron">
+      <img class="icon-img" src="assets/chevron-down.svg" alt="" />
+    </div>
+
+  </div>
+
+  <!-- Scrim -->
+  <div class="scrim" id="scrim"></div>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+
+    <div class="navbar-left">
+      <div class="navbar-logo">
+        <img src="assets/logo.png" alt="MEW Portfolio" />
+      </div>
+      <div class="nav-links">
+        <div class="nav-link active">
+          <div class="nav-link-inner"><span class="nav-link-label">Home</span></div>
+        </div>
+        <div class="nav-link">
+          <div class="nav-link-inner"><span class="nav-link-label">Stocks</span></div>
+        </div>
+        <div class="nav-link">
+          <div class="nav-link-inner"><span class="nav-link-label">Crypto</span></div>
+        </div>
+        <div class="nav-link">
+          <div class="nav-link-inner"><span class="nav-link-label">More</span></div>
+          <div class="icon-frame-20">
+            <img class="icon-img" src="assets/chevron-down.svg" alt="" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="navbar-right">
+      <div class="searchbar">
+        <div class="icon-frame-20">
+          <img class="icon-img" src="assets/magnifying-glass.svg" alt="" />
+        </div>
+        <span class="searchbar-placeholder">Search</span>
+      </div>
+
+      <!-- Anchor: pill is rendered here visually but lives outside navbar in DOM -->
+      <div id="pillAnchor" style="visibility:hidden;pointer-events:none;"></div>
+
+      <div class="actions">
+        <div class="icon-button">
+          <div class="icon-frame-24">
+            <img class="icon-img" src="assets/bell.svg" alt="Notifications" />
+          </div>
+        </div>
+        <div class="icon-button">
+          <div class="icon-frame-24">
+            <img class="icon-img" src="assets/settings.svg" alt="Settings" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Modal -->
+  <div class="modal" id="modal">
+
+    <div class="modal-slides" id="modalSlides">
+
+      <!-- Slide 1: main list view -->
+      <div class="modal-slide">
+
+        <!-- Detail card section -->
+        <div class="modal-card-section">
+          <div class="modal-card-inner">
+
+            <!-- Color header band -->
+            <div class="card-header" id="cardHeader">
+              <div class="card-top-row">
+                <div class="card-info">
+                  <span class="card-balance" id="cardBalance">$5.71</span>
+                  <div class="card-name-row">
+                    <span class="card-name" id="cardName">Address 1</span>
+                    <div class="card-address-group">
+                      <span class="card-address-short" id="cardAddr">1234</span>
+                      <div class="card-copy-btn">
+                        <div class="icon-frame-16">
+                          <img class="icon-img" src="assets/copy.svg" alt="Copy" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <span class="card-source" id="cardSource">From metamask</span>
+                </div>
+                <div class="card-more-btn">
+                  <div class="icon-frame-24">
+                    <img class="icon-img" src="assets/more-vertical.svg" alt="More" />
+                  </div>
+                </div>
+              </div>
+
+              <div class="card-bottom-row" id="cardBottomRow">
+                <div class="card-status-row">
+                  <div class="icon-frame-16" id="cardStatusIcon"></div>
+                  <span class="card-status-label" id="cardStatusLabel">Connected</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Network row -->
+            <div class="card-network-row" id="networkRow">
+              <div class="icon-frame-28" id="networkIcon">
+                <img class="icon-img" id="networkIconImg" src="assets/eth-network.svg" alt="Ethereum" />
+              </div>
+              <div class="card-network-label">
+                <span class="card-network-name" id="networkName">Ethereum</span>
+                <div class="icon-frame-24 network-chevron">
+                  <img class="icon-img" src="assets/chevron-down.svg" alt="" />
+                </div>
+              </div>
+            </div>
+
+
+          </div>
+        </div>
+
+        <!-- List section -->
+        <div class="modal-list-section">
+          <div class="modal-list-scroll" id="addressList"></div>
+          <div class="modal-list-fade"></div>
+        </div>
+
+        <!-- Footer -->
+        <div class="modal-footer">
+          <button class="add-wallet-btn">
+            <span>Add wallet</span>
+          </button>
+        </div>
+
+        <!-- Network dropdown — positioned absolute over the list -->
+        <div class="network-dropdown" id="networkDropdown">
+          <div class="network-dropdown-header">Networks</div>
+          <div class="network-dropdown-scroll" id="networkList"></div>
+        </div>
+
+      </div><!-- /slide 1 -->
+
+      <!-- Slide 2: connect address screen -->
+      <div class="modal-slide" id="connectSlide" style="position:relative;">
+        <div class="connect-back-btn" id="connectBackBtn">
+          <div class="icon-frame-20">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12.5 15L7.5 10L12.5 5" stroke="#000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="connect-screen">
+          <div class="connect-provider-icon" id="connectProviderIcon">
+            <img id="connectProviderImg" src="" alt="" />
+          </div>
+
+          <div class="connect-text-group">
+            <p class="connect-title">Connect address</p>
+            <p class="connect-subtitle" id="connectSubtitle">To connect, please open your Metamask extension and select the following address:</p>
+          </div>
+
+          <div class="connect-address-box">
+            <p class="connect-address-full" id="connectAddressFull">0x742d35Cc6634C0532925a3b844Bc454e4438f44e</p>
+          </div>
+
+          <button class="connect-open-btn" id="connectOpenBtn">
+            <span id="connectOpenLabel">Open Metamask</span>
+            <div class="icon-frame-20" style="flex-shrink:0;margin-right:8px;">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5.83337 14.1667L14.1667 5.83334M14.1667 5.83334H8.33337M14.1667 5.83334V11.6667" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </button>
+        </div>
+      </div><!-- /slide 2 -->
+
+    </div><!-- /modal-slides -->
+
+  </div>
+
+  <script>
+    // ─── Networks data ───────────────────────────────────────────────────────
+    const NETWORKS = [
+      { id: 'eth',  name: 'Ethereum',         icon: 'assets/eth-network.svg'  },
+      { id: 'arb',  name: 'Arbitrum',          icon: 'assets/arb-network.svg'  },
+      { id: 'op',   name: 'Optimism',          icon: 'assets/op-network.png'   },
+      { id: 'bnb',  name: 'BNB Smart Chain',   icon: 'assets/bnb-network.svg'  },
+      { id: 'avax', name: 'Avalanche C-Chain', icon: 'assets/avax-network.svg' },
+      { id: 'base', name: 'Base',              icon: 'assets/base-network.png' },
+      { id: 'matic',name: 'Polygon',           icon: 'assets/matic-network.png'},
+    ];
+
+    // Balances per address per network
+    const NETWORK_BALANCES = {
+      1: { eth: '$5.71', arb: '$12.40', op: '$0.00', bnb: '$3.10', avax: '$0.50', base: '$1.20', matic: '$0.89' },
+      2: { eth: '$160.90', arb: '$44.20', op: '$8.30', bnb: '$22.10', avax: '$5.60', base: '$9.80', matic: '$14.00' },
+      3: { eth: '$58.70', arb: '$7.00', op: '$0.00', bnb: '$0.00', avax: '$0.00', base: '$3.50', matic: '$2.10' },
+      4: { eth: '$5.89', arb: '$0.00', op: '$0.00', bnb: '$1.20', avax: '$0.00', base: '$0.00', matic: '$0.30' },
+      5: { eth: '$77.20', arb: '$15.00', op: '$4.50', bnb: '$8.90', avax: '$2.00', base: '$0.00', matic: '$5.60' },
+      6: { eth: '$0.67', arb: '$0.00', op: '$0.00', bnb: '$0.00', avax: '$0.00', base: '$0.00', matic: '$0.10' },
+    };
+
+    let selectedNetworkId = 'eth';
+
+    // ─── Data ───────────────────────────────────────────────────────────────
+    // "connected" = wallet connection (persists), "watchonly" = private key / seed phrase (loses connection on reload)
+    const addresses = [
+      { id: 1, name: 'Address 1', addrShort: '1234', source: 'Metamask', balance: '$5.71',   color: '#ffda6d', status: 'connected', avatarUrl: 'assets/avatar-1.png' },
+      { id: 2, name: 'Address 2', addrShort: '2345', source: 'Metamask', balance: '$160.90', color: '#86efac', status: 'watchonly', avatarUrl: 'assets/avatar-2.png' },
+      { id: 3, name: 'Address 3', addrShort: '3456', source: 'Rabby',    balance: '$58.70',  color: '#fca5a5', status: 'watchonly', avatarUrl: 'assets/avatar-3.png' },
+      { id: 4, name: 'Address 4', addrShort: '4567', source: 'Rabby',    balance: '$5.89',   color: '#fde68a', status: 'watchonly', avatarUrl: 'assets/avatar-4.png' },
+      { id: 5, name: 'Address 5', addrShort: '5678', source: 'Private Key', balance: '$77.20', color: '#fdba74', status: 'watchonly', avatarUrl: 'assets/avatar-5.png' },
+      { id: 6, name: 'Address 6', addrShort: '6789', source: 'Seed Phrase', balance: '$0.67',  color: '#fca5a5', status: 'watchonly', avatarUrl: 'assets/avatar-6.png' },
+    ];
+
+    // Icons
+    const ICON_CHECK    = 'assets/check.svg'; // check 16-solid inside black circle
+    const ICON_EYE      = 'assets/eye-badge.svg'; // eye watchonly badge
+    const ICON_ELLIPSIS = null; // rendered inline — see address-more-btn markup
+    const ICON_CONNECTED_STATUS = 'assets/connected-status.svg'; // connected dot in card
+    const ICON_EYE_STATUS       = 'assets/eye-status.svg'; // eye for pill & card status
+    const ICON_EYE_BADGE_STATUS = 'assets/eye-name-badge.svg'; // connected badge next to name in list
+
+    // ─── State ──────────────────────────────────────────────────────────────
+    let selectedId = 1; // Address 1 is selected (and connected) by default
+
+    // ─── Pill ───────────────────────────────────────────────────────────────
+    function updatePill() {
+      const addr = addresses.find(a => a.id === selectedId);
+      const pill = document.getElementById('walletPill');
+      // Reset cached min-width so positionPill recalculates on next frame
+      const anchor = document.getElementById('pillAnchor');
+      anchor._minWidth = null;
+
+      document.getElementById('pillName').textContent = addr.name;
+      document.getElementById('pillAddr').textContent = addr.addrShort;
+
+      if (addr.status === 'connected') {
+        pill.classList.add('is-connected');
+        document.getElementById('pillStatusRow').style.display = 'flex';
+        document.getElementById('pillStatusRow').innerHTML = `
+          <div class="icon-frame-12"><div class="connected-dot"></div></div>
+          <span class="pill-status-label">Connected</span>
+        `;
+      } else {
+        pill.classList.remove('is-connected');
+        document.getElementById('pillStatusRow').style.display = 'flex';
+        document.getElementById('pillStatusRow').innerHTML = `
+          <div class="icon-frame-12" style="position:relative;">
+            <img class="icon-img" src="${ICON_EYE_STATUS}" alt="" />
+          </div>
+          <span class="pill-status-label">Watchonly</span>
+        `;
+      }
+    }
+
+    // ─── Card (detail) ──────────────────────────────────────────────────────
+    function updateCard() {
+      const addr = addresses.find(a => a.id === selectedId);
+      document.getElementById('cardHeader').style.background = addr.color;
+      const balances = NETWORK_BALANCES[addr.id];
+      document.getElementById('cardBalance').textContent = balances ? (balances[selectedNetworkId] || '$0.00') : addr.balance;
+      document.getElementById('cardName').textContent = addr.name;
+      document.getElementById('cardAddr').textContent = addr.addrShort;
+      document.getElementById('cardSource').textContent = 'From ' + addr.source.toLowerCase();
+
+      const statusIcon  = document.getElementById('cardStatusIcon');
+      const statusLabel = document.getElementById('cardStatusLabel');
+      const bottomRow   = document.getElementById('cardBottomRow');
+
+      // Remove existing connect button if any
+      const existing = document.getElementById('cardActionBtn');
+      if (existing) existing.remove();
+
+      if (addr.status === 'connected') {
+        statusIcon.innerHTML = `<img class="icon-img" src="${ICON_CONNECTED_STATUS}" alt="" />`;
+        statusLabel.textContent = 'Connected';
+      } else {
+        statusIcon.innerHTML = `<img class="icon-img" src="${ICON_EYE_STATUS}" alt="" />`;
+        statusLabel.textContent = 'Watchonly';
+        const btn = document.createElement('button');
+        btn.className = 'card-btn is-connect';
+        btn.id = 'cardActionBtn';
+        btn.innerHTML = '<span>Connect address</span>';
+        btn.addEventListener('click', () => {
+          if (addr.source === 'Metamask' || addr.source === 'Rabby') {
+            openConnectScreen();
+          } else {
+            addresses.forEach(a => { if (a.status === 'connected') a.status = 'watchonly'; });
+            addr.status = 'connected';
+            renderAll();
+          }
+        });
+        bottomRow.appendChild(btn);
+      }
+    }
+
+    // ─── Address list ────────────────────────────────────────────────────────
+    function renderList() {
+      const container = document.getElementById('addressList');
+      // keep the fade overlay
+      container.innerHTML = `<div class="modal-list-header"><span>Saved addresses (${addresses.length})</span></div>`;
+
+      addresses.forEach(addr => {
+        const isSelected = addr.id === selectedId;
+        const row = document.createElement('div');
+        row.className = 'address-row' + (isSelected ? ' is-selected' : '');
+        row.dataset.id = addr.id;
+
+        // status badge next to name
+        let nameBadge = '';
+        if (addr.status === 'connected') {
+          nameBadge = `<div class="address-status-badge"><div class="address-connected-dot"></div></div>`;
+        } else {
+          nameBadge = `<div class="address-status-badge"><img src="${ICON_EYE}" alt="" style="width:14px;height:14px;display:block;" /></div>`;
+        }
+
+        const ringClass       = addr.status === 'connected' ? 'address-avatar-ring is-connected' : null;
+        const checkVisibility = isSelected ? '' : 'is-hidden';
+        const balanceClass    = isSelected ? 'is-selected' : '';
+        const subClass        = isSelected ? 'is-selected' : '';
+
+        row.innerHTML = `
+          <div class="address-avatar" style="position:relative;">
+            <img src="${addr.avatarUrl}" alt="${addr.name}" />
+            ${ringClass ? `<div class="${ringClass}"></div>` : ''}
+          </div>
+          <div class="address-info">
+            <div class="address-name-row">
+              <span class="address-name">${addr.name}</span>
+              ${nameBadge}
+            </div>
+            <span class="address-sub ${subClass}">${addr.addrShort} • ${addr.source}</span>
+          </div>
+          <div class="address-check ${checkVisibility}">
+            <img src="${ICON_CHECK}" alt="" />
+          </div>
+          <span class="address-balance ${balanceClass}">${NETWORK_BALANCES[addr.id] ? (NETWORK_BALANCES[addr.id][selectedNetworkId] || '$0.00') : addr.balance}</span>
+          <div class="address-more-btn">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="10" cy="4.5" r="1.25" fill="#575757"/>
+              <circle cx="10" cy="10" r="1.25" fill="#575757"/>
+              <circle cx="10" cy="15.5" r="1.25" fill="#575757"/>
+            </svg>
+          </div>
+        `;
+
+        row.addEventListener('click', (e) => {
+          if (e.target.closest('.address-more-btn')) return;
+          selectedId = addr.id;
+          renderAll();
+          requestAnimationFrame(positionPill);
+        });
+
+        container.appendChild(row);
+      });
+    }
+
+    function renderAll() {
+      updatePill();
+      updateCard();
+      renderList();
+    }
+
+    // ─── Provider icons (inline SVG data URLs) ───────────────────────────────
+    const PROVIDER_ICONS = {
+      'Metamask': 'https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg',
+      'Rabby': 'https://rabby.io/assets/images/logo-128.png',
+    };
+
+    // Full address per id (simulated)
+    const FULL_ADDRESSES = {
+      1: '0x742d35Cc6634C0532925a3b844Bc454e4438f44e',
+      2: '0x9a8b2c3d4e5f6789012345678901234567892345',
+      3: '0x1234567890abcdef1234567890abcdef12343456',
+      4: '0xdeadbeef1234567890abcdef1234567890ab4567',
+      5: '0xfeedface1234567890abcdef1234567890ab5678',
+      6: '0xcafebabe1234567890abcdef1234567890ab6789',
+    };
+
+    // ─── Slide navigation ────────────────────────────────────────────────────
+    let listViewHeight = null; // cached height of the list-view modal
+
+    function openConnectScreen() {
+      const addr = addresses.find(a => a.id === selectedId);
+      const provider = addr.source;
+      const modal = document.getElementById('modal');
+
+      // Populate connect screen content before measuring
+      const providerImg = document.getElementById('connectProviderImg');
+      providerImg.src = PROVIDER_ICONS[provider] || '';
+      providerImg.alt = provider;
+      document.getElementById('connectSubtitle').textContent =
+        `To connect, please open your ${provider} extension and select the following address:`;
+      document.getElementById('connectAddressFull').textContent =
+        FULL_ADDRESSES[addr.id] || addr.addrShort;
+      document.getElementById('connectOpenLabel').textContent = `Open ${provider}`;
+
+      // Save current modal height so we can restore it
+      listViewHeight = modal.offsetHeight;
+
+      // Measure natural height of slide 2 by cloning it offscreen (flex:1 prevents reading real height in-flow)
+      const connectScreen = document.querySelector('.connect-screen');
+      const clone = connectScreen.cloneNode(true);
+      clone.style.cssText = 'position:fixed;visibility:hidden;flex:none;width:' + connectScreen.offsetWidth + 'px;';
+      document.body.appendChild(clone);
+      const targetHeight = clone.offsetHeight;
+      document.body.removeChild(clone);
+
+      // Animate height, then slide
+      modal.style.height = targetHeight + 'px';
+      document.getElementById('modalSlides').classList.add('show-connect');
+    }
+
+    function closeConnectScreen() {
+      const modal = document.getElementById('modal');
+      if (listViewHeight !== null) {
+        modal.style.height = listViewHeight + 'px';
+      }
+      document.getElementById('modalSlides').classList.remove('show-connect');
+    }
+
+    document.getElementById('connectBackBtn').addEventListener('click', closeConnectScreen);
+
+
+    // ─── Open / Close modal ──────────────────────────────────────────────────
+    function openModal() {
+      const pill     = document.getElementById('walletPill');
+      const modal    = document.getElementById('modal');
+      const pillRect = pill.getBoundingClientRect();
+      const top      = pillRect.bottom + 8;
+      // Set height instantly (no transition) on open
+      modal.style.transition = 'none';
+      modal.style.top    = top + 'px';
+      modal.style.right  = (window.innerWidth - pillRect.right) + 'px';
+      modal.style.height = (window.innerHeight - top - 40) + 'px';
+      modal.classList.add('is-visible');
+      modal.offsetHeight; // force reflow
+      modal.style.transition = '';
+      document.getElementById('scrim').classList.add('is-visible');
+      pill.classList.add('is-open');
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('modal');
+      modal.classList.remove('is-visible');
+      document.getElementById('scrim').classList.remove('is-visible');
+      document.getElementById('walletPill').classList.remove('is-open');
+      closeNetworkDropdown();
+      // Reset slide and height without animation
+      const slides = document.getElementById('modalSlides');
+      modal.style.transition = 'none';
+      slides.style.transition = 'none';
+      slides.classList.remove('show-connect');
+      requestAnimationFrame(() => {
+        modal.style.transition = '';
+        slides.style.transition = '';
+      });
+    }
+
+    document.getElementById('walletPill').addEventListener('click', () => {
+      const isOpen = document.getElementById('modal').classList.contains('is-visible');
+      isOpen ? closeModal() : openModal();
+    });
+
+    document.getElementById('scrim').addEventListener('click', closeModal);
+
+    // ─── Position pill over its navbar anchor ────────────────────────────────
+    function positionPill() {
+      const anchor = document.getElementById('pillAnchor');
+      const pill   = document.getElementById('walletPill');
+
+      // Anchor holds the minimum pill height so navbar doesn't collapse
+      anchor.style.height = pill.offsetHeight + 'px';
+
+      // Track the minimum width seen (first render = collapsed state)
+      if (!anchor._minWidth) anchor._minWidth = pill.offsetWidth;
+      anchor.style.width = anchor._minWidth + 'px';
+
+      // Align pill's right edge to anchor's right edge — grows leftward
+      const r = anchor.getBoundingClientRect();
+      pill.style.top   = Math.round(r.top) + 'px';
+      pill.style.left  = 'auto';
+      pill.style.right = (window.innerWidth - Math.round(r.right)) + 'px';
+    }
+
+    window.addEventListener('resize', positionPill);
+
+    // ─── Network dropdown ────────────────────────────────────────────────────
+    function renderNetworkList() {
+      const container = document.getElementById('networkList');
+      container.innerHTML = '';
+      NETWORKS.forEach(net => {
+        const isSelected = net.id === selectedNetworkId;
+        const opt = document.createElement('div');
+        opt.className = 'network-option' + (isSelected ? ' is-selected' : '');
+        opt.innerHTML = `
+          <div class="network-option-icon"><img src="${net.icon}" alt="${net.name}" /></div>
+          <span class="network-option-name">${net.name}</span>
+          ${isSelected ? `<div class="network-option-check"><img src="${ICON_CHECK}" alt="" /></div>` : ''}
+        `;
+        opt.addEventListener('click', () => {
+          selectedNetworkId = net.id;
+          closeNetworkDropdown();
+          updateNetworkRow();
+          updateCardBalance();
+          updatePillNetworkBadge();
+          renderNetworkList();
+        });
+        container.appendChild(opt);
+      });
+    }
+
+    function updateNetworkRow() {
+      const net = NETWORKS.find(n => n.id === selectedNetworkId);
+      document.getElementById('networkIconImg').src = net.icon;
+      document.getElementById('networkIconImg').alt = net.name;
+      document.getElementById('networkName').textContent = net.name;
+    }
+
+    function updateCardBalance() {
+      const balances = NETWORK_BALANCES[selectedId];
+      const balance = balances ? (balances[selectedNetworkId] || '$0.00') : '$0.00';
+      document.getElementById('cardBalance').textContent = balance;
+    }
+
+    function updatePillNetworkBadge() {
+      const badgeImg = document.getElementById('pillNetworkBadgeImg');
+      if (!badgeImg) return;
+      const net = NETWORKS.find(n => n.id === selectedNetworkId);
+      badgeImg.src = net.icon;
+      badgeImg.alt = net.name;
+    }
+
+    function openNetworkDropdown() {
+      const dropdown = document.getElementById('networkDropdown');
+      const row = document.getElementById('networkRow');
+      const rowRect = row.getBoundingClientRect();
+      // Width matches modal minus 32px padding (16px each side)
+      const modalWidth = 384;
+      dropdown.style.top   = (rowRect.bottom + 8) + 'px';
+      dropdown.style.left  = rowRect.left + 'px';
+      dropdown.style.width = (modalWidth - 32) + 'px';
+      dropdown.classList.add('is-visible');
+      row.classList.add('is-open');
+      renderNetworkList();
+    }
+
+    function closeNetworkDropdown() {
+      document.getElementById('networkDropdown').classList.remove('is-visible');
+      document.getElementById('networkRow').classList.remove('is-open');
+    }
+
+    document.getElementById('networkRow').addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = document.getElementById('networkDropdown').classList.contains('is-visible');
+      isOpen ? closeNetworkDropdown() : openNetworkDropdown();
+    });
+
+    // Close dropdown on click outside
+    document.addEventListener('click', (e) => {
+      const dropdown = document.getElementById('networkDropdown');
+      const row = document.getElementById('networkRow');
+      if (dropdown.classList.contains('is-visible') && !dropdown.contains(e.target) && !row.contains(e.target)) {
+        closeNetworkDropdown();
+      }
+    });
+
+    // ─── Init ────────────────────────────────────────────────────────────────
+    renderAll();
+    updateNetworkRow();
+    updatePillNetworkBadge();
+    requestAnimationFrame(positionPill);
+  </script>
+
+</body>
+</html>
