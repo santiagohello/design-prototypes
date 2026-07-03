@@ -103,18 +103,18 @@
             </div>
           </div>
 
-          <!-- Market limited row -->
-          <div class="ts-market-bar">
-            <div class="ts-market-left">
-              <span class="ts-market-label">Market limited</span>
-              <span class="ts-market-dot">•</span>
-              <span class="ts-market-time-label">Premarket</span>
+          <!-- Market status row -->
+          <div class="ts-market-bar" id="market-bar">
+            <div class="ts-market-left" id="market-left">
+              <span class="ts-market-label" id="market-label">Market limited</span>
+              <span class="ts-market-dot" id="market-dot">•</span>
+              <span class="ts-market-time-label" id="market-session">Premarket</span>
               <button class="ts-info-btn">
                 <img class="ts-info-icon" src="assets/icons/information-circle.svg" alt="Info" />
               </button>
             </div>
             <div class="ts-market-right">
-              <span class="ts-market-until">Until 9:31 AM</span>
+              <span class="ts-market-until" id="market-until">Until 9:31 AM</span>
             </div>
           </div>
 
@@ -209,6 +209,26 @@
         </button>
       </aside>
 
+    </div>
+  </div>
+
+  <!-- Prototype settings panel -->
+  <div class="proto-settings">
+    <div class="proto-settings-header">
+      <span class="proto-settings-title">Prototype</span>
+    </div>
+    <div class="proto-settings-body">
+      <label class="proto-settings-label">Market status</label>
+      <div class="proto-settings-options" id="status-options">
+        <button class="proto-status-btn" data-status="premarket">Premarket</button>
+        <button class="proto-status-btn" data-status="paused-regular">Paused → Regular</button>
+        <button class="proto-status-btn active" data-status="open">Market open</button>
+        <button class="proto-status-btn" data-status="paused-postmarket">Paused → Postmarket</button>
+        <button class="proto-status-btn" data-status="postmarket">Postmarket</button>
+        <button class="proto-status-btn" data-status="paused-overnight">Paused → Overnight</button>
+        <button class="proto-status-btn" data-status="overnight">Overnight</button>
+        <button class="proto-status-btn" data-status="weekend">Weekend</button>
+      </div>
     </div>
   </div>
 
