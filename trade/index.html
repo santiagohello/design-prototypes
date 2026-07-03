@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MEW — Trade</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+
+    <!-- Navbar -->
+    <header class="navbar">
+      <div class="navbar-left">
+        <div class="logo">
+          <img src="assets/logo.png" alt="MEW" />
+        </div>
+        <nav class="nav-links">
+          <a class="nav-link active" href="#">
+            Home
+            <img class="chevron" src="assets/icons/chevron-down.svg" alt="" />
+          </a>
+          <a class="nav-link" href="#">
+            Stocks
+            <img class="chevron" src="assets/icons/chevron-down.svg" alt="" />
+          </a>
+          <a class="nav-link" href="#">
+            Crypto
+            <img class="chevron" src="assets/icons/chevron-down.svg" alt="" />
+          </a>
+          <a class="nav-link" href="#">
+            More
+            <img class="chevron" src="assets/icons/chevron-down.svg" alt="" />
+          </a>
+        </nav>
+      </div>
+      <div class="navbar-right">
+        <div class="searchbar">
+          <img src="assets/icons/magnifying-glass.svg" alt="" />
+          <span>Search</span>
+        </div>
+        <div class="wallet-dropdown">
+          <div class="wallet-avatar-wrap">
+            <img class="wallet-avatar" src="assets/avatar.png" alt="" />
+            <img class="wallet-network" src="assets/icons/networks.svg" alt="" />
+          </div>
+          <div class="wallet-info">
+            <span class="wallet-balance">$130.23</span>
+            <div class="wallet-address">
+              <span>0x78Yi...98H74</span>
+              <img src="assets/icons/copy.png" alt="" />
+            </div>
+          </div>
+          <img class="chevron" src="assets/icons/chevron-down.svg" alt="" />
+        </div>
+        <div class="icon-button">
+          <img src="assets/icons/bell.svg" alt="Notifications" />
+        </div>
+        <div class="icon-button">
+          <img src="assets/icons/settings.svg" alt="Settings" />
+        </div>
+      </div>
+    </header>
+
+    <!-- Main content -->
+    <div class="main">
+
+      <!-- Content area (chart/portfolio, left of trade panel) -->
+      <div class="content-area"></div>
+
+      <!-- Trade section panel -->
+      <div class="trade-section">
+
+        <!-- Header -->
+        <div class="ts-header">
+          <p class="ts-title">Trade</p>
+          <p class="ts-subtitle">Buy/Sell Ondo Tokenized Stocks</p>
+        </div>
+
+        <!-- Form -->
+        <div class="ts-form">
+
+          <!-- Popover -->
+          <div class="ts-popover" id="market-popover" hidden>
+            <div class="ts-popover-arrow">
+              <img src="assets/popover-arrow.svg" alt="" />
+            </div>
+            <div class="ts-popover-body">
+              <button class="ts-popover-close" id="popover-close">
+                <img src="assets/icons/x-mark.svg" alt="Close" />
+              </button>
+              <p class="ts-popover-text">
+                Only a selected amount of stocks available to be traded. <a href="#" class="ts-popover-link">Learn more</a> about market hours.
+              </p>
+              <hr class="ts-popover-divider" />
+              <div class="ts-popover-next">
+                <span class="ts-popover-next-label">Next up</span>
+                <span class="ts-popover-next-value">Regular market (9:35 AM)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Market limited row -->
+          <div class="ts-market-bar">
+            <div class="ts-market-left">
+              <span class="ts-market-label">Market limited</span>
+              <span class="ts-market-dot">•</span>
+              <span class="ts-market-time-label">Premarket</span>
+              <button class="ts-info-btn">
+                <img class="ts-info-icon" src="assets/icons/information-circle.svg" alt="Info" />
+              </button>
+            </div>
+            <div class="ts-market-right">
+              <span class="ts-market-until">Until 9:31 AM</span>
+            </div>
+          </div>
+
+          <!-- Sell box -->
+          <div class="ts-box">
+            <p class="ts-box-label">SELL</p>
+            <div class="ts-box-row">
+              <span class="ts-amount">0</span>
+              <button class="ts-token-btn">
+                <img class="ts-token-icon" src="assets/token-usdc.svg" alt="" />
+                <span class="ts-token-name">USDC</span>
+                <img class="ts-chevron-right" src="assets/icons/chevron-right.svg" alt="" />
+              </button>
+            </div>
+            <div class="ts-box-meta">
+              <span>$0.00</span>
+              <span>Balance: 125.98 USDC</span>
+            </div>
+            <div class="ts-percentages">
+              <button class="ts-pct-btn">25%</button>
+              <button class="ts-pct-btn">50%</button>
+              <button class="ts-pct-btn">75%</button>
+              <button class="ts-pct-btn">MAX</button>
+            </div>
+          </div>
+
+          <!-- Swap toggle -->
+          <div class="ts-swap-wrap">
+            <button class="ts-swap-btn">
+              <img src="assets/icons/arrows-up-down.svg" alt="Swap" />
+            </button>
+          </div>
+
+          <!-- Buy box -->
+          <div class="ts-box">
+            <p class="ts-box-label">BUY</p>
+            <div class="ts-box-row">
+              <span class="ts-amount">0</span>
+              <button class="ts-token-btn">
+                <img class="ts-token-icon" src="assets/token-nvda.svg" alt="" />
+                <span class="ts-token-name">NVDA</span>
+                <span class="ts-token-ondo">on</span>
+                <img class="ts-chevron-right" src="assets/icons/chevron-right.svg" alt="" />
+              </button>
+            </div>
+            <div class="ts-box-meta">
+              <span>$0.00</span>
+              <span>Balance: 0.056 ETH</span>
+            </div>
+          </div>
+
+          <!-- CTA button -->
+          <button class="ts-cta-btn" disabled>Enter amount</button>
+
+        </div>
+
+        <!-- Footer -->
+        <div class="ts-footer">
+          <button class="ts-help-btn">Need help trading?</button>
+        </div>
+
+      </div>
+
+      <!-- Action bar (sidebar right) -->
+      <aside class="action-bar">
+        <button class="action-bar-collapse" aria-label="Collapse">
+          <img src="assets/icons/chevron-double-right.svg" alt="" />
+        </button>
+        <button class="action-bar-btn active">
+          <img src="assets/icons/chart-bar-square.svg" alt="" />
+          <span>Trade</span>
+        </button>
+        <button class="action-bar-btn">
+          <img src="assets/icons/chart-bar-square.svg" alt="" />
+          <span>Swap</span>
+        </button>
+        <button class="action-bar-btn">
+          <img src="assets/icons/chart-bar-square.svg" alt="" />
+          <span>Bridge</span>
+        </button>
+        <button class="action-bar-btn">
+          <img src="assets/icons/chart-bar-square.svg" alt="" />
+          <span>Deposit</span>
+        </button>
+        <button class="action-bar-btn">
+          <img src="assets/icons/chart-bar-square.svg" alt="" />
+          <span>Send</span>
+        </button>
+        <button class="action-bar-btn">
+          <img src="assets/icons/chart-bar-square.svg" alt="" />
+          <span>Buy/Sell</span>
+        </button>
+      </aside>
+
+    </div>
+  </div>
+
+  <script src="main.js"></script>
+</body>
+</html>

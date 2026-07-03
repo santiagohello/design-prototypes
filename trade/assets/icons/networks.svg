@@ -1,0 +1,21 @@
+<svg  viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Networks">
+<g clip-path="url(#clip0_0_107)">
+<circle id="Base" cx="9" cy="9" r="8" fill="var(--fill-0, #677FE3)"/>
+<g id="Logo">
+<path id="Vector" d="M9.03998 2.5351L8.95354 2.82973V11.3792L9.03998 11.4657L12.9978 9.1199L9.03998 2.5351Z" fill="var(--fill-0, #C1CBF2)"/>
+<path id="Vector_2" d="M9.03993 2.53511L5.08213 9.1199L9.03993 11.4657V7.31609V2.53511Z" fill="var(--fill-0, white)"/>
+<path id="Vector_3" d="M9.03987 12.2171L8.99116 12.2766V15.3221L9.03987 15.4648L13 9.87245L9.03987 12.2171Z" fill="var(--fill-0, #C1CBF2)"/>
+<path id="Vector_4" d="M9.03992 15.4648V12.217L5.08212 9.8724L9.03992 15.4648Z" fill="var(--fill-0, white)"/>
+<path id="Vector_5" d="M9.03977 11.4657L12.9975 9.11994L9.03977 7.31613V11.4657Z" fill="var(--fill-0, #8497E8)"/>
+<path id="Vector_6" d="M5.08212 9.11994L9.03986 11.4657V7.31613L5.08212 9.11994Z" fill="var(--fill-0, #C1CBF2)"/>
+</g>
+</g>
+<rect x="0.5" y="0.5" width="17" height="17" rx="8.5" stroke="var(--stroke-0, white)"/>
+</g>
+<defs>
+<clipPath id="clip0_0_107">
+<rect x="1" y="1" width="16" height="16" rx="8" fill="white"/>
+</clipPath>
+</defs>
+</svg>
